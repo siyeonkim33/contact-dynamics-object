@@ -1,0 +1,2924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PrimContact-v1 · object set</title>
+<style>
+  :root{
+    --bg:#0e1216; --panel:#161c22; --line:#263039; --ink:#e8eef2;
+    --dim:#8fa0ad; --accent:#4fd6b8; --accent2:#ffb454; --pick:#4fd6b8; --nopick:#ff6b6b;
+    --grid:#1c242c;
+    --mono:"SFMono-Regular",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);
+    font-family:var(--mono);-webkit-font-smoothing:antialiased}
+  #app{display:flex;height:100vh;overflow:hidden}
+
+  /* ---- left control rail ---- */
+  #rail{width:250px;flex:0 0 250px;background:var(--panel);border-right:1px solid var(--line);
+    padding:18px 16px;display:flex;flex-direction:column;gap:20px;overflow-y:auto}
+  .brand{line-height:1.15}
+  .brand b{font-size:15px;letter-spacing:.5px}
+  .brand span{display:block;color:var(--dim);font-size:11px;margin-top:3px}
+  .grp{display:flex;flex-direction:column;gap:8px}
+  .grp h4{margin:0;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);font-weight:600}
+  .seg{display:flex;flex-wrap:wrap;gap:6px}
+  .seg button{flex:1 1 auto;background:transparent;border:1px solid var(--line);color:var(--dim);
+    font-family:var(--mono);font-size:11px;padding:6px 8px;border-radius:5px;cursor:pointer;white-space:nowrap}
+  .seg button.on{background:var(--accent);border-color:var(--accent);color:#04120e;font-weight:600}
+  .seg button:hover:not(.on){border-color:var(--accent);color:var(--ink)}
+  label.row{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--dim);cursor:pointer}
+  label.row input{accent-color:var(--accent)}
+  .legend{display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--dim)}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:7px;vertical-align:middle}
+  .count{font-size:11px;color:var(--dim);margin-top:auto;border-top:1px solid var(--line);padding-top:12px}
+  .count b{color:var(--accent)}
+
+  /* ---- stage ---- */
+  #stage{flex:1;position:relative}
+  #cv{display:block;width:100%;height:100%}
+  .hint{position:absolute;left:16px;bottom:14px;font-size:11px;color:var(--dim);
+    background:rgba(14,18,22,.7);padding:6px 10px;border-radius:6px;border:1px solid var(--line)}
+
+  /* ---- hover / detail card ---- */
+  #card{position:absolute;top:14px;right:14px;width:250px;background:var(--panel);
+    border:1px solid var(--line);border-radius:10px;padding:14px 15px;font-size:11px;
+    display:none;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+  #card h3{margin:0 0 3px;font-size:13px;color:var(--ink)}
+  #card .type{color:var(--accent2);font-size:10px;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
+  #card table{width:100%;border-collapse:collapse}
+  #card td{padding:3px 0;color:var(--dim);vertical-align:top}
+  #card td.k{width:96px;color:#6f8494}
+  #card td.v{color:var(--ink)}
+  .chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+  .chip{font-size:9.5px;padding:2px 6px;border-radius:4px;background:#1e2731;color:var(--dim);border:1px solid var(--line)}
+  .chip.mode{background:#132a25;color:var(--accent);border-color:#1f4a40}
+  .chip.tag{background:#2a2013;color:var(--accent2);border-color:#4a3a1f}
+  .pick-badge{margin-top:10px;font-size:10px;padding:4px 8px;border-radius:5px;text-align:center;font-weight:600}
+  .pick-badge.yes{background:#123028;color:var(--pick)}
+  .pick-badge.no{background:#301616;color:var(--nopick)}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="rail">
+    <div class="brand">
+      <b>PrimContact-v1</b>
+      <span>50 primitives · push / pick / place</span>
+    </div>
+
+    <div class="grp">
+      <h4>Group</h4>
+      <div class="seg" id="f-group">
+        <button data-g="all" class="on">all</button>
+        <button data-g="cube">cube</button>
+        <button data-g="cylinder">cyl</button>
+        <button data-g="cuboid">cuboid</button>
+        <button data-g="poly">poly</button>
+      </div>
+    </div>
+
+    <div class="grp">
+      <h4>Sort within group</h4>
+      <div class="seg" id="f-sort">
+        <button data-s="default" class="on">group</button>
+        <button data-s="longest">size</button>
+        <button data-s="aspect">aspect</button>
+        <button data-s="poses">poses</button>
+      </div>
+    </div>
+
+    <div class="grp">
+      <h4>Filter</h4>
+      <label class="row"><input type="checkbox" id="f-pick"> pickable only (2F-140)</label>
+      <label class="row"><input type="checkbox" id="f-adv"> adversarial only</label>
+      <label class="row"><input type="checkbox" id="f-labels" checked> show id labels</label>
+      <label class="row"><input type="checkbox" id="f-spin"> auto-rotate items</label>
+    </div>
+
+    <div class="grp">
+      <h4>Colour</h4>
+      <div class="seg" id="f-color">
+        <button data-c="group" class="on">by group</button>
+        <button data-c="pick">pickable</button>
+        <button data-c="aspect">aspect</button>
+      </div>
+    </div>
+
+    <div class="legend" id="legend"></div>
+
+    <div class="count" id="count"></div>
+  </aside>
+
+  <main id="stage">
+    <canvas id="cv"></canvas>
+    <div class="hint">drag = orbit · scroll = zoom · hover an object for specs</div>
+    <div id="card"></div>
+  </main>
+</div>
+
+<script>window.__MANIFEST__ = {
+  "dataset": "PrimContact-v1",
+  "description": "Primitive object set for contact-dynamics skill-effect prediction (push/pick/place). Fixed physics; specified dims.",
+  "gripper": {
+    "model": "Robotiq 2F-140",
+    "stroke_cm": 14.0,
+    "pick_max_cm": 11.0,
+    "pick_pref_min_cm": 6.0
+  },
+  "size_policy_cm": {
+    "longest_max": 20,
+    "longest_min": 5,
+    "thinnest_min": 3,
+    "thin_disk_exception_cm": 2.5
+  },
+  "material": {
+    "density_kgm3": 700.0,
+    "mu_ground": 0.35,
+    "mu_gripper": 0.8,
+    "restitution": 0.1
+  },
+  "counts": {
+    "total": 50,
+    "by_group": {
+      "cube": 6,
+      "cylinder": 14,
+      "cuboid": 18,
+      "polyhedra": 12
+    },
+    "by_type": {
+      "cube": 6,
+      "cylinder": 14,
+      "cuboid": 18,
+      "tri_prism": 3,
+      "hex_prism": 3,
+      "pyramid": 2,
+      "cone": 1,
+      "tetra": 1,
+      "l_block": 2
+    },
+    "pickable": 49
+  },
+  "objects": [
+    {
+      "id": "cube_5",
+      "type": "cube",
+      "dims_cm": [
+        5,
+        5,
+        5
+      ],
+      "longest_cm": 5,
+      "shortest_cm": 5,
+      "aspect_ratio": 1.0,
+      "stable_poses": 1,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.0875,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          3.6e-05,
+          3.6e-05,
+          3.6e-05
+        ]
+      }
+    },
+    {
+      "id": "cube_6",
+      "type": "cube",
+      "dims_cm": [
+        6,
+        6,
+        6
+      ],
+      "longest_cm": 6,
+      "shortest_cm": 6,
+      "aspect_ratio": 1.0,
+      "stable_poses": 1,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.1512,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          9.1e-05,
+          9.1e-05,
+          9.1e-05
+        ]
+      }
+    },
+    {
+      "id": "cube_7",
+      "type": "cube",
+      "dims_cm": [
+        7,
+        7,
+        7
+      ],
+      "longest_cm": 7,
+      "shortest_cm": 7,
+      "aspect_ratio": 1.0,
+      "stable_poses": 1,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.2401,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000196,
+          0.000196,
+          0.000196
+        ]
+      }
+    },
+    {
+      "id": "cube_9",
+      "type": "cube",
+      "dims_cm": [
+        9,
+        9,
+        9
+      ],
+      "longest_cm": 9,
+      "shortest_cm": 9,
+      "aspect_ratio": 1.0,
+      "stable_poses": 1,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.5103,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000689,
+          0.000689,
+          0.000689
+        ]
+      }
+    },
+    {
+      "id": "cube_11",
+      "type": "cube",
+      "dims_cm": [
+        11,
+        11,
+        11
+      ],
+      "longest_cm": 11,
+      "shortest_cm": 11,
+      "aspect_ratio": 1.0,
+      "stable_poses": 1,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.9317,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.001879,
+          0.001879,
+          0.001879
+        ]
+      }
+    },
+    {
+      "id": "cube_14",
+      "type": "cube",
+      "dims_cm": [
+        14,
+        14,
+        14
+      ],
+      "longest_cm": 14,
+      "shortest_cm": 14,
+      "aspect_ratio": 1.0,
+      "stable_poses": 1,
+      "pickable": false,
+      "pick_axes": [],
+      "modes_expected": [
+        "slide",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place"
+      ],
+      "tags": [
+        "large_push_place_only"
+      ],
+      "physics": {
+        "mass_kg": 1.9208,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.006275,
+          0.006275,
+          0.006275
+        ]
+      }
+    },
+    {
+      "id": "cyl_d10_h2.5",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 10,
+        "height": 2.5
+      },
+      "longest_cm": 10,
+      "shortest_cm": 2.5,
+      "aspect_ratio": 0.25,
+      "stable_poses": 2,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": true
+      },
+      "modes_expected": [
+        "slide",
+        "roll_on_side"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.1374,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          9.3e-05,
+          9.3e-05,
+          0.000172
+        ]
+      }
+    },
+    {
+      "id": "cyl_d12_h3.0",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 12,
+        "height": 3.0
+      },
+      "longest_cm": 12,
+      "shortest_cm": 3.0,
+      "aspect_ratio": 0.25,
+      "stable_poses": 2,
+      "pickable": true,
+      "pick_axes": {
+        "upright": false,
+        "on_side": true
+      },
+      "modes_expected": [
+        "slide",
+        "roll_on_side"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.2375,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000232,
+          0.000232,
+          0.000428
+        ]
+      }
+    },
+    {
+      "id": "cyl_d8_h3.0",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 8,
+        "height": 3.0
+      },
+      "longest_cm": 8,
+      "shortest_cm": 3.0,
+      "aspect_ratio": 0.38,
+      "stable_poses": 2,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": true
+      },
+      "modes_expected": [
+        "slide",
+        "roll_on_side"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.1056,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          5e-05,
+          5e-05,
+          8.4e-05
+        ]
+      }
+    },
+    {
+      "id": "cyl_d6_h5.0",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 6,
+        "height": 5.0
+      },
+      "longest_cm": 6,
+      "shortest_cm": 5.0,
+      "aspect_ratio": 0.83,
+      "stable_poses": 2,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": true
+      },
+      "modes_expected": [
+        "slide",
+        "topple",
+        "roll_on_side"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.099,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          4.3e-05,
+          4.3e-05,
+          4.5e-05
+        ]
+      }
+    },
+    {
+      "id": "cyl_d7_h7.0",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 7,
+        "height": 7.0
+      },
+      "longest_cm": 7,
+      "shortest_cm": 7,
+      "aspect_ratio": 1.0,
+      "stable_poses": 2,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": true
+      },
+      "modes_expected": [
+        "slide",
+        "topple",
+        "roll_on_side"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.1886,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000135,
+          0.000135,
+          0.000116
+        ]
+      }
+    },
+    {
+      "id": "cyl_d5_h5.0",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 5,
+        "height": 5.0
+      },
+      "longest_cm": 5,
+      "shortest_cm": 5,
+      "aspect_ratio": 1.0,
+      "stable_poses": 2,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": true
+      },
+      "modes_expected": [
+        "slide",
+        "topple",
+        "roll_on_side"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.0687,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          2.5e-05,
+          2.5e-05,
+          2.1e-05
+        ]
+      }
+    },
+    {
+      "id": "cyl_d8_h6.0",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 8,
+        "height": 6.0
+      },
+      "longest_cm": 8,
+      "shortest_cm": 6.0,
+      "aspect_ratio": 0.75,
+      "stable_poses": 2,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": true
+      },
+      "modes_expected": [
+        "slide",
+        "topple",
+        "roll_on_side"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.2111,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000148,
+          0.000148,
+          0.000169
+        ]
+      }
+    },
+    {
+      "id": "cyl_d5_h8.0",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 5,
+        "height": 8.0
+      },
+      "longest_cm": 8.0,
+      "shortest_cm": 5,
+      "aspect_ratio": 1.6,
+      "stable_poses": 2,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": true
+      },
+      "modes_expected": [
+        "topple",
+        "slide"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.11,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          7.6e-05,
+          7.6e-05,
+          3.4e-05
+        ]
+      }
+    },
+    {
+      "id": "cyl_d6_h9.0",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 6,
+        "height": 9.0
+      },
+      "longest_cm": 9.0,
+      "shortest_cm": 6,
+      "aspect_ratio": 1.5,
+      "stable_poses": 2,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": true
+      },
+      "modes_expected": [
+        "topple",
+        "slide"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.1781,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.00016,
+          0.00016,
+          8e-05
+        ]
+      }
+    },
+    {
+      "id": "cyl_d5_h9.0",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 5,
+        "height": 9.0
+      },
+      "longest_cm": 9.0,
+      "shortest_cm": 5,
+      "aspect_ratio": 1.8,
+      "stable_poses": 2,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": true
+      },
+      "modes_expected": [
+        "topple",
+        "slide"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.1237,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000103,
+          0.000103,
+          3.9e-05
+        ]
+      }
+    },
+    {
+      "id": "cyl_d4_h10.0",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 4,
+        "height": 10.0
+      },
+      "longest_cm": 10.0,
+      "shortest_cm": 4,
+      "aspect_ratio": 2.5,
+      "stable_poses": 2,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": true
+      },
+      "modes_expected": [
+        "topple",
+        "slide"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.088,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          8.2e-05,
+          8.2e-05,
+          1.8e-05
+        ]
+      }
+    },
+    {
+      "id": "cyl_d4_h12.0",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 4,
+        "height": 12.0
+      },
+      "longest_cm": 12.0,
+      "shortest_cm": 4,
+      "aspect_ratio": 3.0,
+      "stable_poses": 2,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": false
+      },
+      "modes_expected": [
+        "topple",
+        "slide"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.1056,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000137,
+          0.000137,
+          2.1e-05
+        ]
+      }
+    },
+    {
+      "id": "cyl_d5_h12.0",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 5,
+        "height": 12.0
+      },
+      "longest_cm": 12.0,
+      "shortest_cm": 5,
+      "aspect_ratio": 2.4,
+      "stable_poses": 2,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": false
+      },
+      "modes_expected": [
+        "topple",
+        "slide"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.1649,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000224,
+          0.000224,
+          5.2e-05
+        ]
+      }
+    },
+    {
+      "id": "cyl_d3.5_h10.0",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 3.5,
+        "height": 10.0
+      },
+      "longest_cm": 10.0,
+      "shortest_cm": 3.5,
+      "aspect_ratio": 2.86,
+      "stable_poses": 2,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": true
+      },
+      "modes_expected": [
+        "topple",
+        "slide"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.0673,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          6.1e-05,
+          6.1e-05,
+          1e-05
+        ]
+      }
+    },
+    {
+      "id": "cuboid_5_5_10",
+      "type": "cuboid",
+      "dims_cm": [
+        5,
+        5,
+        10
+      ],
+      "longest_cm": 10,
+      "shortest_cm": 5,
+      "aspect_ratio": 2.0,
+      "stable_poses": 3,
+      "pickable": true,
+      "pick_axes": [
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_5_5_10"
+      ],
+      "physics": {
+        "mass_kg": 0.175,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000182,
+          0.000182,
+          7.3e-05
+        ]
+      }
+    },
+    {
+      "id": "cuboid_6_6_12",
+      "type": "cuboid",
+      "dims_cm": [
+        6,
+        6,
+        12
+      ],
+      "longest_cm": 12,
+      "shortest_cm": 6,
+      "aspect_ratio": 2.0,
+      "stable_poses": 3,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_6_6_12"
+      ],
+      "physics": {
+        "mass_kg": 0.3024,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000454,
+          0.000454,
+          0.000181
+        ]
+      }
+    },
+    {
+      "id": "cuboid_5_10_10",
+      "type": "cuboid",
+      "dims_cm": [
+        5,
+        10,
+        10
+      ],
+      "longest_cm": 10,
+      "shortest_cm": 5,
+      "aspect_ratio": 2.0,
+      "stable_poses": 3,
+      "pickable": true,
+      "pick_axes": [
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_5_10_10"
+      ],
+      "physics": {
+        "mass_kg": 0.35,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000583,
+          0.000365,
+          0.000365
+        ]
+      }
+    },
+    {
+      "id": "cuboid_4_8_8",
+      "type": "cuboid",
+      "dims_cm": [
+        4,
+        8,
+        8
+      ],
+      "longest_cm": 8,
+      "shortest_cm": 4,
+      "aspect_ratio": 2.0,
+      "stable_poses": 3,
+      "pickable": true,
+      "pick_axes": [
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_4_8_8"
+      ],
+      "physics": {
+        "mass_kg": 0.1792,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000191,
+          0.000119,
+          0.000119
+        ]
+      }
+    },
+    {
+      "id": "cuboid_3_6_9",
+      "type": "cuboid",
+      "dims_cm": [
+        3,
+        6,
+        9
+      ],
+      "longest_cm": 9,
+      "shortest_cm": 3,
+      "aspect_ratio": 3.0,
+      "stable_poses": 3,
+      "pickable": true,
+      "pick_axes": [
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_3_6_9"
+      ],
+      "physics": {
+        "mass_kg": 0.1134,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000111,
+          8.5e-05,
+          4.3e-05
+        ]
+      }
+    },
+    {
+      "id": "cuboid_4_8_12",
+      "type": "cuboid",
+      "dims_cm": [
+        4,
+        8,
+        12
+      ],
+      "longest_cm": 12,
+      "shortest_cm": 4,
+      "aspect_ratio": 3.0,
+      "stable_poses": 3,
+      "pickable": true,
+      "pick_axes": [
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_4_8_12"
+      ],
+      "physics": {
+        "mass_kg": 0.2688,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000466,
+          0.000358,
+          0.000179
+        ]
+      }
+    },
+    {
+      "id": "cuboid_5_10_15",
+      "type": "cuboid",
+      "dims_cm": [
+        5,
+        10,
+        15
+      ],
+      "longest_cm": 15,
+      "shortest_cm": 5,
+      "aspect_ratio": 3.0,
+      "stable_poses": 3,
+      "pickable": true,
+      "pick_axes": [
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_5_10_15"
+      ],
+      "physics": {
+        "mass_kg": 0.525,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.001422,
+          0.001094,
+          0.000547
+        ]
+      }
+    },
+    {
+      "id": "cuboid_4_4_12",
+      "type": "cuboid",
+      "dims_cm": [
+        4,
+        4,
+        12
+      ],
+      "longest_cm": 12,
+      "shortest_cm": 4,
+      "aspect_ratio": 3.0,
+      "stable_poses": 3,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_4_4_12"
+      ],
+      "physics": {
+        "mass_kg": 0.1344,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000179,
+          0.000179,
+          3.6e-05
+        ]
+      }
+    },
+    {
+      "id": "cuboid_5_5_15",
+      "type": "cuboid",
+      "dims_cm": [
+        5,
+        5,
+        15
+      ],
+      "longest_cm": 15,
+      "shortest_cm": 5,
+      "aspect_ratio": 3.0,
+      "stable_poses": 3,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_5_5_15"
+      ],
+      "physics": {
+        "mass_kg": 0.2625,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000547,
+          0.000547,
+          0.000109
+        ]
+      }
+    },
+    {
+      "id": "cuboid_3_6_12",
+      "type": "cuboid",
+      "dims_cm": [
+        3,
+        6,
+        12
+      ],
+      "longest_cm": 12,
+      "shortest_cm": 3,
+      "aspect_ratio": 4.0,
+      "stable_poses": 3,
+      "pickable": true,
+      "pick_axes": [
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_3_6_12"
+      ],
+      "physics": {
+        "mass_kg": 0.1512,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000227,
+          0.000193,
+          5.7e-05
+        ]
+      }
+    },
+    {
+      "id": "cuboid_4_8_16",
+      "type": "cuboid",
+      "dims_cm": [
+        4,
+        8,
+        16
+      ],
+      "longest_cm": 16,
+      "shortest_cm": 4,
+      "aspect_ratio": 4.0,
+      "stable_poses": 3,
+      "pickable": true,
+      "pick_axes": [
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_4_8_16"
+      ],
+      "physics": {
+        "mass_kg": 0.3584,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000956,
+          0.000812,
+          0.000239
+        ]
+      }
+    },
+    {
+      "id": "cuboid_4_6_8",
+      "type": "cuboid",
+      "dims_cm": [
+        4,
+        6,
+        8
+      ],
+      "longest_cm": 8,
+      "shortest_cm": 4,
+      "aspect_ratio": 2.0,
+      "stable_poses": 3,
+      "pickable": true,
+      "pick_axes": [
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_4_6_8"
+      ],
+      "physics": {
+        "mass_kg": 0.1344,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000112,
+          9e-05,
+          5.8e-05
+        ]
+      }
+    },
+    {
+      "id": "cuboid_5_7.5_10",
+      "type": "cuboid",
+      "dims_cm": [
+        5,
+        7.5,
+        10
+      ],
+      "longest_cm": 10,
+      "shortest_cm": 5,
+      "aspect_ratio": 2.0,
+      "stable_poses": 3,
+      "pickable": true,
+      "pick_axes": [
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_5_7.5_10"
+      ],
+      "physics": {
+        "mass_kg": 0.2625,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000342,
+          0.000273,
+          0.000178
+        ]
+      }
+    },
+    {
+      "id": "cuboid_4_12_12",
+      "type": "cuboid",
+      "dims_cm": [
+        4,
+        12,
+        12
+      ],
+      "longest_cm": 12,
+      "shortest_cm": 4,
+      "aspect_ratio": 3.0,
+      "stable_poses": 3,
+      "pickable": true,
+      "pick_axes": [
+        0
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_4_12_12"
+      ],
+      "physics": {
+        "mass_kg": 0.4032,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000968,
+          0.000538,
+          0.000538
+        ]
+      }
+    },
+    {
+      "id": "cuboid_3_3_12",
+      "type": "cuboid",
+      "dims_cm": [
+        3,
+        3,
+        12
+      ],
+      "longest_cm": 12,
+      "shortest_cm": 3,
+      "aspect_ratio": 4.0,
+      "stable_poses": 3,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_3_3_12"
+      ],
+      "physics": {
+        "mass_kg": 0.0756,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          9.6e-05,
+          9.6e-05,
+          1.1e-05
+        ]
+      }
+    },
+    {
+      "id": "cuboid_4_4_16",
+      "type": "cuboid",
+      "dims_cm": [
+        4,
+        4,
+        16
+      ],
+      "longest_cm": 16,
+      "shortest_cm": 4,
+      "aspect_ratio": 4.0,
+      "stable_poses": 3,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_4_4_16"
+      ],
+      "physics": {
+        "mass_kg": 0.1792,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000406,
+          0.000406,
+          4.8e-05
+        ]
+      }
+    },
+    {
+      "id": "cuboid_3_9_15",
+      "type": "cuboid",
+      "dims_cm": [
+        3,
+        9,
+        15
+      ],
+      "longest_cm": 15,
+      "shortest_cm": 3,
+      "aspect_ratio": 5.0,
+      "stable_poses": 3,
+      "pickable": true,
+      "pick_axes": [
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_3_9_15"
+      ],
+      "physics": {
+        "mass_kg": 0.2835,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000723,
+          0.000553,
+          0.000213
+        ]
+      }
+    },
+    {
+      "id": "cuboid_5_10_18",
+      "type": "cuboid",
+      "dims_cm": [
+        5,
+        10,
+        18
+      ],
+      "longest_cm": 18,
+      "shortest_cm": 5,
+      "aspect_ratio": 3.6,
+      "stable_poses": 3,
+      "pickable": true,
+      "pick_axes": [
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_5_10_18"
+      ],
+      "physics": {
+        "mass_kg": 0.63,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.002226,
+          0.001832,
+          0.000656
+        ]
+      }
+    },
+    {
+      "id": "triprism_a",
+      "type": "tri_prism",
+      "dims_cm": [
+        6,
+        6,
+        10
+      ],
+      "longest_cm": 10,
+      "shortest_cm": 6,
+      "aspect_ratio": 1.67,
+      "stable_poses": 3,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "roll_edge"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.126,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000286,
+          0.000286,
+          0.000151
+        ],
+        "fill_factor": 0.5,
+        "note": "mass approximated from bbox * fill_factor; CoM offset present"
+      }
+    },
+    {
+      "id": "triprism_b",
+      "type": "tri_prism",
+      "dims_cm": [
+        5,
+        5,
+        12
+      ],
+      "longest_cm": 12,
+      "shortest_cm": 5,
+      "aspect_ratio": 2.4,
+      "stable_poses": 3,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1
+      ],
+      "modes_expected": [
+        "topple",
+        "slide"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.105,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000296,
+          0.000296,
+          8.8e-05
+        ],
+        "fill_factor": 0.5,
+        "note": "mass approximated from bbox * fill_factor; CoM offset present"
+      }
+    },
+    {
+      "id": "triprism_c",
+      "type": "tri_prism",
+      "dims_cm": [
+        8,
+        8,
+        8
+      ],
+      "longest_cm": 8,
+      "shortest_cm": 8,
+      "aspect_ratio": 1.0,
+      "stable_poses": 3,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "topple"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.1792,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000382,
+          0.000382,
+          0.000382
+        ],
+        "fill_factor": 0.5,
+        "note": "mass approximated from bbox * fill_factor; CoM offset present"
+      }
+    },
+    {
+      "id": "hexprism_tall",
+      "type": "hex_prism",
+      "dims_cm": [
+        6,
+        6,
+        10
+      ],
+      "longest_cm": 10,
+      "shortest_cm": 6,
+      "aspect_ratio": 1.67,
+      "stable_poses": 2,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "topple",
+        "slide"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.1638,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000286,
+          0.000286,
+          0.000151
+        ],
+        "fill_factor": 0.65,
+        "note": "mass approximated from bbox * fill_factor; CoM offset present"
+      }
+    },
+    {
+      "id": "hexprism_flat",
+      "type": "hex_prism",
+      "dims_cm": [
+        9,
+        9,
+        4
+      ],
+      "longest_cm": 9,
+      "shortest_cm": 4,
+      "aspect_ratio": 2.25,
+      "stable_poses": 2,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "roll_facet"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.1474,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000183,
+          0.000183,
+          0.000306
+        ],
+        "fill_factor": 0.65,
+        "note": "mass approximated from bbox * fill_factor; CoM offset present"
+      }
+    },
+    {
+      "id": "hexprism_mid",
+      "type": "hex_prism",
+      "dims_cm": [
+        7,
+        7,
+        7
+      ],
+      "longest_cm": 7,
+      "shortest_cm": 7,
+      "aspect_ratio": 1.0,
+      "stable_poses": 2,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "topple"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.1561,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "inertia_diag": [
+          0.000196,
+          0.000196,
+          0.000196
+        ],
+        "fill_factor": 0.65,
+        "note": "mass approximated from bbox * fill_factor; CoM offset present"
+      }
+    },
+    {
+      "id": "pyramid_sq",
+      "type": "pyramid",
+      "dims_cm": [
+        8,
+        8,
+        8
+      ],
+      "longest_cm": 8,
+      "shortest_cm": 8,
+      "aspect_ratio": 1.0,
+      "stable_poses": 1,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "tip_back"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.1183,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          "below_geometric_center"
+        ],
+        "inertia_diag": [
+          0.000382,
+          0.000382,
+          0.000382
+        ],
+        "fill_factor": 0.33,
+        "note": "mass approximated from bbox * fill_factor; CoM offset present"
+      }
+    },
+    {
+      "id": "pyramid_tall",
+      "type": "pyramid",
+      "dims_cm": [
+        6,
+        6,
+        11
+      ],
+      "longest_cm": 11,
+      "shortest_cm": 6,
+      "aspect_ratio": 1.83,
+      "stable_poses": 1,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "topple",
+        "slide"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.0915,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          "below_geometric_center"
+        ],
+        "inertia_diag": [
+          0.000363,
+          0.000363,
+          0.000166
+        ],
+        "fill_factor": 0.33,
+        "note": "mass approximated from bbox * fill_factor; CoM offset present"
+      }
+    },
+    {
+      "id": "cone_a",
+      "type": "cone",
+      "dims_cm": [
+        7,
+        7,
+        9
+      ],
+      "longest_cm": 9,
+      "shortest_cm": 7,
+      "aspect_ratio": 1.29,
+      "stable_poses": 1,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "roll_on_side",
+        "tip_back"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.1019,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          "below_geometric_center"
+        ],
+        "inertia_diag": [
+          0.000334,
+          0.000334,
+          0.000252
+        ],
+        "fill_factor": 0.33,
+        "note": "mass approximated from bbox * fill_factor; CoM offset present"
+      }
+    },
+    {
+      "id": "tetra_a",
+      "type": "tetra",
+      "dims_cm": [
+        8,
+        8,
+        8
+      ],
+      "longest_cm": 8,
+      "shortest_cm": 8,
+      "aspect_ratio": 1.0,
+      "stable_poses": 1,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "tip"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "physics": {
+        "mass_kg": 0.0609,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          "below_geometric_center"
+        ],
+        "inertia_diag": [
+          0.000382,
+          0.000382,
+          0.000382
+        ],
+        "fill_factor": 0.17,
+        "note": "mass approximated from bbox * fill_factor; CoM offset present"
+      }
+    },
+    {
+      "id": "l_block_a",
+      "type": "l_block",
+      "dims_cm": [
+        10,
+        10,
+        4
+      ],
+      "longest_cm": 10,
+      "shortest_cm": 4,
+      "aspect_ratio": 2.5,
+      "stable_poses": 2,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "rotate",
+        "topple"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "adversarial",
+        "non_convex",
+        "com_offset"
+      ],
+      "physics": {
+        "mass_kg": 0.21,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          "below_geometric_center"
+        ],
+        "inertia_diag": [
+          0.000271,
+          0.000271,
+          0.000467
+        ],
+        "fill_factor": 0.75,
+        "note": "mass approximated from bbox * fill_factor; CoM offset present"
+      }
+    },
+    {
+      "id": "l_block_b",
+      "type": "l_block",
+      "dims_cm": [
+        8,
+        8,
+        8
+      ],
+      "longest_cm": 8,
+      "shortest_cm": 8,
+      "aspect_ratio": 1.0,
+      "stable_poses": 3,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "topple",
+        "rotate",
+        "slide"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "adversarial",
+        "non_convex",
+        "com_offset"
+      ],
+      "physics": {
+        "mass_kg": 0.2688,
+        "density_kgm3": 700.0,
+        "mu_ground": 0.35,
+        "mu_gripper": 0.8,
+        "restitution": 0.1,
+        "com_local": [
+          0.0,
+          0.0,
+          "below_geometric_center"
+        ],
+        "inertia_diag": [
+          0.000382,
+          0.000382,
+          0.000382
+        ],
+        "fill_factor": 0.75,
+        "note": "mass approximated from bbox * fill_factor; CoM offset present"
+      }
+    }
+  ]
+};</script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.min.js"
+}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+// ---------------------------------------------------------------------------
+// data is injected below by the build step (see #DATA)
+// ---------------------------------------------------------------------------
+const MANIFEST = window.__MANIFEST__;
+const OBJS = MANIFEST.objects;
+
+// group key helper
+const groupOf = o =>
+  (o.type === 'cube' || o.type === 'cylinder' || o.type === 'cuboid') ? o.type : 'poly';
+
+const GROUP_ORDER = ['cube','cylinder','cuboid','poly'];
+const GROUP_COL = { cube:0x6aa9ff, cylinder:0xffb454, cuboid:0x4fd6b8, poly:0xc792ea };
+const CM = 0.1; // scene units: 1 unit = 10 cm, so cm * 0.1 -> keeps grid readable
+
+// ---- renderer / scene ----
+const canvas = document.getElementById('cv');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0e1216);
+
+const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 200);
+camera.position.set(11, 9, 15);
+
+// lights
+scene.add(new THREE.HemisphereLight(0xbfd4e6, 0x0a0e12, 0.75));
+const key = new THREE.DirectionalLight(0xffffff, 1.15);
+key.position.set(8, 16, 9);
+key.castShadow = true;
+key.shadow.mapSize.set(2048,2048);
+const d=22; key.shadow.camera.left=-d;key.shadow.camera.right=d;
+key.shadow.camera.top=d;key.shadow.camera.bottom=-d;key.shadow.camera.far=60;
+scene.add(key);
+const fill = new THREE.DirectionalLight(0x88aaff, 0.3);
+fill.position.set(-10,6,-8); scene.add(fill);
+
+// ground
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(200,200),
+  new THREE.MeshStandardMaterial({color:0x121820, roughness:.98, metalness:0})
+);
+ground.rotation.x = -Math.PI/2; ground.position.y = 0; ground.receiveShadow = true;
+scene.add(ground);
+const grid = new THREE.GridHelper(200, 200, 0x1c242c, 0x1c242c);
+grid.position.y = 0.001; scene.add(grid);
+
+// ---- geometry factory (true-scale, sitting on ground) ----
+function buildGeom(o){
+  const t = o.type;
+  let g, height;
+  if (t === 'cylinder'){
+    const d = o.dims_cm.diameter, h = o.dims_cm.height;
+    g = new THREE.CylinderGeometry(d/2*CM, d/2*CM, h*CM, 48);
+    height = h*CM;
+  } else if (t === 'cube' || t === 'cuboid'){
+    const [x,y,z] = o.dims_cm;
+    // orient so the largest face is the base, tallest dim is up -> canonical stable pose
+    const dims = [x,y,z].sort((a,b)=>a-b); // small,mid,large
+    // base = mid x large footprint, height = small? No: tallest standing uses largest as height
+    // choose height = largest, base = mid*small (a "standing" pose to show topple potential)
+    const H = dims[2], A = dims[0], B = dims[1];
+    g = new THREE.BoxGeometry(A*CM, H*CM, B*CM);
+    height = H*CM;
+  } else if (t === 'tri_prism'){
+    const [a,,l] = o.dims_cm;
+    const s = a*CM;
+    const tri = new THREE.Shape();
+    tri.moveTo(-s/2,-s/2); tri.lineTo(s/2,-s/2); tri.lineTo(0,s/2); tri.closePath();
+    g = new THREE.ExtrudeGeometry(tri, {depth:l*CM, bevelEnabled:false});
+    g.rotateX(-Math.PI/2); g.center();
+    height = s;
+  } else if (t === 'hex_prism'){
+    const af = o.dims_cm[0], h = o.dims_cm[2];
+    g = new THREE.CylinderGeometry(af/2*CM, af/2*CM, h*CM, 6);
+    height = h*CM;
+  } else if (t === 'pyramid'){
+    const base = o.dims_cm[0], h = o.dims_cm[2];
+    g = new THREE.ConeGeometry(base/2*CM, h*CM, 4);
+    height = h*CM;
+  } else if (t === 'cone'){
+    const base = o.dims_cm[0], h = o.dims_cm[2];
+    g = new THREE.ConeGeometry(base/2*CM, h*CM, 40);
+    height = h*CM;
+  } else if (t === 'tetra'){
+    const s = o.dims_cm[0]*CM;
+    g = new THREE.TetrahedronGeometry(s*0.7);
+    height = s;
+  } else if (t === 'l_block'){
+    // build an L from two boxes, merged via a Group-baked geometry
+    const [x,y,z] = o.dims_cm;
+    const gg = new THREE.BufferGeometry();
+    const b1 = new THREE.BoxGeometry(x*CM, z*CM, y*0.4*CM);
+    const b2 = new THREE.BoxGeometry(x*0.4*CM, z*CM, y*CM);
+    b1.translate(0,0, -y*0.3*CM);
+    b2.translate(-x*0.3*CM,0, 0);
+    // simple concat
+    const merged = mergeGeoms([b1,b2]);
+    g = merged; height = z*CM;
+  } else {
+    g = new THREE.BoxGeometry(1,1,1); height=1;
+  }
+  g.computeVertexNormals();
+  // sit on ground: shift so min y = 0
+  g.computeBoundingBox();
+  const minY = g.boundingBox.min.y;
+  g.translate(0, -minY, 0);
+  return g;
+}
+
+// minimal geometry merge (positions+normals) to avoid extra deps
+function mergeGeoms(list){
+  let pos=[], nor=[];
+  for(const geo of list){
+    const p = geo.attributes.position.array;
+    geo.computeVertexNormals();
+    const n = geo.attributes.normal.array;
+    if(geo.index){
+      const idx = geo.index.array;
+      for(let i=0;i<idx.length;i++){
+        const k=idx[i]*3;
+        pos.push(p[k],p[k+1],p[k+2]); nor.push(n[k],n[k+1],n[k+2]);
+      }
+    } else {
+      for(let i=0;i<p.length;i++){pos.push(p[i]);} 
+      for(let i=0;i<n.length;i++){nor.push(n[i]);}
+    }
+  }
+  const bg = new THREE.BufferGeometry();
+  bg.setAttribute('position', new THREE.Float32BufferAttribute(pos,3));
+  bg.setAttribute('normal', new THREE.Float32BufferAttribute(nor,3));
+  return bg;
+}
+
+// aspect -> colour ramp (teal low -> amber high)
+function aspectColor(ar){
+  const t = Math.min(1, Math.max(0, (ar-0.25)/(3-0.25)));
+  const c1 = new THREE.Color(0x4fd6b8), c2 = new THREE.Color(0xff6b6b);
+  return c1.clone().lerp(c2, t);
+}
+
+// ---- build meshes ----
+const items = []; // {o, mesh, group, tileLabel}
+for(const o of OBJS){
+  const geom = buildGeom(o);
+  const mat = new THREE.MeshStandardMaterial({roughness:.55, metalness:.05});
+  const mesh = new THREE.Mesh(geom, mat);
+  mesh.castShadow = true; mesh.receiveShadow = false;
+  mesh.userData.o = o;
+  scene.add(mesh);
+  items.push({o, mesh, group:groupOf(o)});
+}
+
+// ---- label sprites ----
+function makeLabel(text){
+  const c = document.createElement('canvas'); const s=256; c.width=s; c.height=64;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle='rgba(0,0,0,0)'; ctx.fillRect(0,0,s,64);
+  ctx.font='600 26px ui-monospace,Menlo,monospace';
+  ctx.fillStyle='#8fa0ad'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(text, s/2, 34);
+  const tex = new THREE.CanvasTexture(c); tex.anisotropy=4;
+  const spr = new THREE.Sprite(new THREE.SpriteMaterial({map:tex, transparent:true, depthTest:false}));
+  spr.scale.set(2.6,0.65,1);
+  return spr;
+}
+for(const it of items){
+  it.label = makeLabel(it.o.id);
+  scene.add(it.label);
+}
+
+// group divider labels (floating headers)
+const headerSprites = {};
+function makeHeader(text){
+  const c=document.createElement('canvas'); c.width=512;c.height=96;
+  const ctx=c.getContext('2d');
+  ctx.font='700 46px ui-monospace,Menlo,monospace';
+  ctx.fillStyle='#4fd6b8'; ctx.textAlign='left'; ctx.textBaseline='middle';
+  ctx.fillText(text.toUpperCase(), 8, 52);
+  const tex=new THREE.CanvasTexture(c); tex.anisotropy=4;
+  const spr=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));
+  spr.scale.set(6,1.1,1);
+  scene.add(spr); return spr;
+}
+for(const g of GROUP_ORDER) headerSprites[g]=makeHeader(g);
+
+// ---------------------------------------------------------------------------
+// LAYOUT: grid, grouped in row-bands, aligned columns
+// ---------------------------------------------------------------------------
+const state = {group:'all', sort:'default', pickOnly:false, advOnly:false,
+               labels:true, spin:false, color:'group'};
+const SPACING = 3.4;      // cell size in scene units
+const COLS = 8;           // columns per band
+
+function visibleItems(){
+  let list = items.filter(it=>{
+    if(state.group!=='all' && it.group!==state.group) return false;
+    if(state.pickOnly && !it.o.pickable) return false;
+    if(state.advOnly && !(it.o.tags||[]).includes('adversarial')) return false;
+    return true;
+  });
+  return list;
+}
+
+function sortKey(it){
+  const o=it.o;
+  if(state.sort==='longest') return o.longest_cm;
+  if(state.sort==='aspect')  return o.aspect_ratio ?? 1;
+  if(state.sort==='poses')   return o.stable_poses;
+  return 0;
+}
+
+function layout(){
+  const list = visibleItems();
+  // hide everything first
+  for(const it of items){ it.mesh.visible=false; it.label.visible=false; }
+  for(const g of GROUP_ORDER) headerSprites[g].visible=false;
+
+  // organise into bands by group (respect GROUP_ORDER), unless a single group selected
+  const bands = (state.group==='all') ? GROUP_ORDER : [state.group];
+  let row = 0;
+  const placed = [];
+  for(const g of bands){
+    let band = list.filter(it=>it.group===g);
+    if(!band.length) continue;
+    band.sort((a,b)=> sortKey(a)-sortKey(b) || a.o.id.localeCompare(b.o.id));
+    // header at left of the band's first row
+    const hx = -( COLS*SPACING )/2 - 1.2;
+    const hz = row*SPACING;
+    if(state.group==='all'){
+      const h=headerSprites[g]; h.visible=true;
+      h.position.set(hx+2.4, 3.2, hz-1.9);
+    }
+    for(let i=0;i<band.length;i++){
+      const col = i % COLS;
+      const r   = row + Math.floor(i/COLS);
+      const x = (col - (COLS-1)/2) * SPACING;
+      const z = r * SPACING;
+      const it = band[i];
+      it.mesh.visible=true;
+      it.mesh.position.set(x, 0, z);
+      it.label.visible = state.labels;
+      it.label.position.set(x, 3.05, z-1.35);
+      placed.push({it,x,z});
+    }
+    row += Math.ceil(band.length/COLS) + 1; // +1 blank row between bands
+  }
+
+  applyColors();
+  // recentre camera target on the placed cloud
+  frameLayout(placed);
+}
+
+let camTarget = new THREE.Vector3(0,1,6);
+function frameLayout(placed){
+  if(!placed.length) return;
+  let minX=1e9,maxX=-1e9,minZ=1e9,maxZ=-1e9;
+  for(const p of placed){minX=Math.min(minX,p.x);maxX=Math.max(maxX,p.x);
+    minZ=Math.min(minZ,p.z);maxZ=Math.max(maxZ,p.z);}
+  camTarget.set((minX+maxX)/2, 1, (minZ+maxZ)/2);
+}
+
+function applyColors(){
+  for(const it of items){
+    if(!it.mesh.visible) continue;
+    const o=it.o; let col;
+    if(state.color==='group') col = new THREE.Color(GROUP_COL[it.group]);
+    else if(state.color==='pick') col = new THREE.Color(o.pickable?0x4fd6b8:0xff6b6b);
+    else col = aspectColor(o.aspect_ratio ?? 1);
+    it.mesh.material.color.copy(col);
+    if((o.tags||[]).includes('adversarial')){
+      it.mesh.material.emissive = new THREE.Color(0x552200);
+      it.mesh.material.emissiveIntensity = 0.4;
+    } else {
+      it.mesh.material.emissiveIntensity = 0;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// simple orbit controls (no external dep)
+// ---------------------------------------------------------------------------
+let az=Math.atan2(camera.position.x,camera.position.z), pol=0.75, rad=20;
+{
+  const v=camera.position.clone().sub(camTarget); rad=v.length();
+  pol=Math.acos(v.y/rad); az=Math.atan2(v.x,v.z);
+}
+let dragging=false, px=0, py=0;
+canvas.addEventListener('pointerdown',e=>{dragging=true;px=e.clientX;py=e.clientY;});
+addEventListener('pointerup',()=>dragging=false);
+addEventListener('pointermove',e=>{
+  if(!dragging) return;
+  az -= (e.clientX-px)*0.005; pol -= (e.clientY-py)*0.005;
+  pol=Math.max(0.15,Math.min(1.45,pol)); px=e.clientX;py=e.clientY;
+});
+canvas.addEventListener('wheel',e=>{e.preventDefault();
+  rad*=(1+Math.sign(e.deltaY)*0.08); rad=Math.max(6,Math.min(70,rad));},{passive:false});
+
+// ---------------------------------------------------------------------------
+// hover picking
+// ---------------------------------------------------------------------------
+const ray=new THREE.Raycaster(), mouse=new THREE.Vector2();
+const card=document.getElementById('card');
+let hovered=null;
+canvas.addEventListener('pointermove',e=>{
+  const r=canvas.getBoundingClientRect();
+  mouse.x=((e.clientX-r.left)/r.width)*2-1;
+  mouse.y=-((e.clientY-r.top)/r.height)*2+1;
+  ray.setFromCamera(mouse,camera);
+  const hits=ray.intersectObjects(items.filter(i=>i.mesh.visible).map(i=>i.mesh));
+  if(hits.length){
+    const o=hits[0].object.userData.o;
+    if(hovered!==o){ hovered=o; showCard(o); }
+  } else if(hovered){ hovered=null; card.style.display='none'; }
+});
+
+function showCard(o){
+  const dims = o.type==='cylinder'
+    ? `⌀${o.dims_cm.diameter} × h${o.dims_cm.height} cm`
+    : `${o.dims_cm.join(' × ')} cm`;
+  const modes = (o.modes_expected||[]).map(m=>`<span class="chip mode">${m}</span>`).join('');
+  const tags = (o.tags||[]).map(t=>`<span class="chip tag">${t}</span>`).join('');
+  const ph=o.physics;
+  card.innerHTML = `
+    <h3>${o.id}</h3>
+    <div class="type">${o.type} · ${o.stable_poses} stable pose${o.stable_poses>1?'s':''}</div>
+    <table>
+      <tr><td class="k">dims</td><td class="v">${dims}</td></tr>
+      <tr><td class="k">longest</td><td class="v">${o.longest_cm} cm</td></tr>
+      <tr><td class="k">aspect</td><td class="v">${o.aspect_ratio ?? '—'}</td></tr>
+      <tr><td class="k">mass</td><td class="v">${ph.mass_kg} kg</td></tr>
+      <tr><td class="k">μ ground</td><td class="v">${ph.mu_ground}</td></tr>
+      <tr><td class="k">skills</td><td class="v">${o.skills.join(', ')}</td></tr>
+    </table>
+    <div class="pick-badge ${o.pickable?'yes':'no'}">
+      ${o.pickable?'PICKABLE · 2F-140':'PUSH / PLACE ONLY'}
+    </div>
+    <div class="chips">${modes}</div>
+    ${tags?`<div class="chips">${tags}</div>`:''}
+  `;
+  card.style.display='block';
+}
+
+// ---------------------------------------------------------------------------
+// UI wiring
+// ---------------------------------------------------------------------------
+function seg(id, key, cast=(v)=>v){
+  document.querySelectorAll(`#${id} button`).forEach(b=>{
+    b.addEventListener('click',()=>{
+      document.querySelectorAll(`#${id} button`).forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      state[key]=cast(b.dataset[Object.keys(b.dataset)[0]]);
+      layout(); updateCount();
+    });
+  });
+}
+seg('f-group','group'); seg('f-sort','sort'); seg('f-color','color');
+document.getElementById('f-pick').onchange=e=>{state.pickOnly=e.target.checked;layout();updateCount();};
+document.getElementById('f-adv').onchange=e=>{state.advOnly=e.target.checked;layout();updateCount();};
+document.getElementById('f-labels').onchange=e=>{state.labels=e.target.checked;layout();};
+document.getElementById('f-spin').onchange=e=>{state.spin=e.target.checked;};
+
+function updateCount(){
+  const n=visibleItems().length;
+  const total=OBJS.length;
+  const pick=OBJS.filter(o=>o.pickable).length;
+  document.getElementById('count').innerHTML=
+    `showing <b>${n}</b> / ${total} objects<br>pickable in set: <b>${pick}</b>`;
+}
+function buildLegend(){
+  const L=document.getElementById('legend');
+  if(state.color==='group'){
+    L.innerHTML = GROUP_ORDER.map(g=>
+      `<div><i style="background:#${GROUP_COL[g].toString(16).padStart(6,'0')}"></i>${g}</div>`).join('');
+  } else if(state.color==='pick'){
+    L.innerHTML = `<div><i style="background:#4fd6b8"></i>pickable</div>
+                   <div><i style="background:#ff6b6b"></i>push/place only</div>`;
+  } else {
+    L.innerHTML = `<div><i style="background:#4fd6b8"></i>low aspect (flat)</div>
+                   <div><i style="background:#ff6b6b"></i>high aspect (tall)</div>`;
+  }
+}
+document.querySelectorAll('#f-color button').forEach(b=>b.addEventListener('click',buildLegend));
+
+// ---------------------------------------------------------------------------
+// resize + render loop
+// ---------------------------------------------------------------------------
+function resize(){
+  const r=document.getElementById('stage').getBoundingClientRect();
+  renderer.setSize(r.width,r.height,false);
+  camera.aspect=r.width/r.height; camera.updateProjectionMatrix();
+}
+addEventListener('resize',resize);
+
+let ct=new THREE.Vector3().copy(camTarget);
+function tick(){
+  requestAnimationFrame(tick);
+  ct.lerp(camTarget,0.08);
+  camera.position.set(
+    ct.x + rad*Math.sin(pol)*Math.sin(az),
+    ct.y + rad*Math.cos(pol),
+    ct.z + rad*Math.sin(pol)*Math.cos(az)
+  );
+  camera.lookAt(ct);
+  if(state.spin){
+    for(const it of items) if(it.mesh.visible) it.mesh.rotation.y += 0.006;
+  }
+  renderer.render(scene,camera);
+}
+
+resize(); buildLegend(); layout(); updateCount(); tick();
+</script>
+</body>
+</html>
