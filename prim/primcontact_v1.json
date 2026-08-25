@@ -1,0 +1,3169 @@
+{
+  "dataset": "PrimContact-v1",
+  "description": "Primitive object set for contact-dynamics skill-effect prediction (push/pick/place). Fixed physics; values mirror the actual sim config. Rest poses are embedded per object under objects[i].rest_poses; assets live in usd/.",
+  "gripper": {
+    "model": "Robotiq 2F-140",
+    "stroke_cm": 14.0,
+    "pick_max_cm": 11.0,
+    "pick_pref_min_cm": 6.0
+  },
+  "size_policy_cm": {
+    "longest_max": 20,
+    "longest_min": 5,
+    "thinnest_min": 3,
+    "thin_disk_exception_cm": 2.5
+  },
+  "sim_defaults": {
+    "friction": 0.2,
+    "restitution": 0.0,
+    "density_kgm3": 700.0,
+    "asset_dir": "usd",
+    "position_ranges": [
+      [
+        0.45,
+        0.85
+      ],
+      [
+        -0.4,
+        0.4
+      ],
+      [
+        0.85,
+        0.85
+      ]
+    ],
+    "init_pose": {
+      "method": "rest_poses_embedded",
+      "sampling": "uniform_over_poses",
+      "yaw": "uniform",
+      "jitter_deg": 1.0
+    }
+  },
+  "task_defaults": {
+    "push": {
+      "target_position_ranges": [
+        [
+          0.5,
+          1.0
+        ],
+        [
+          -0.6,
+          0.6
+        ],
+        null
+      ],
+      "obj_offset_dist_ranges": [
+        0.1,
+        0.3
+      ],
+      "cartesian_vel": 0.6,
+      "cartesian_mode": "open_loop",
+      "min_push_distance": 0.05,
+      "ignore_error": true
+    }
+  },
+  "generation": {
+    "prob_threshold": 0.02,
+    "min_margin": 0.003,
+    "merge_symmetric": true
+  },
+  "counts": {
+    "total": 50,
+    "by_type": {
+      "cube": 6,
+      "cylinder": 14,
+      "cuboid": 18,
+      "tri_prism": 3,
+      "hex_prism": 3,
+      "pyramid": 2,
+      "cone": 1,
+      "tetra": 1,
+      "l_block": 2
+    },
+    "pickable": 49
+  },
+  "objects": [
+    {
+      "id": "cube_1",
+      "type": "cube",
+      "dims_cm": [
+        5,
+        5,
+        5
+      ],
+      "longest_cm": 5,
+      "shortest_cm": 5,
+      "aspect_ratio": 1.0,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cube_1.usd",
+        "mass": 0.0875
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.027000000000000003,
+          "prob": 1.0,
+          "support_margin": 0.025,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cube_2",
+      "type": "cube",
+      "dims_cm": [
+        6,
+        6,
+        6
+      ],
+      "longest_cm": 6,
+      "shortest_cm": 6,
+      "aspect_ratio": 1.0,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cube_2.usd",
+        "mass": 0.1512
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.032,
+          "prob": 1.0,
+          "support_margin": 0.03,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cube_3",
+      "type": "cube",
+      "dims_cm": [
+        7,
+        7,
+        7
+      ],
+      "longest_cm": 7,
+      "shortest_cm": 7,
+      "aspect_ratio": 1.0,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cube_3.usd",
+        "mass": 0.2401
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.037000000000000005,
+          "prob": 1.0,
+          "support_margin": 0.035,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cube_4",
+      "type": "cube",
+      "dims_cm": [
+        9,
+        9,
+        9
+      ],
+      "longest_cm": 9,
+      "shortest_cm": 9,
+      "aspect_ratio": 1.0,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cube_4.usd",
+        "mass": 0.5103
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.047,
+          "prob": 1.0,
+          "support_margin": 0.045,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cube_5",
+      "type": "cube",
+      "dims_cm": [
+        11,
+        11,
+        11
+      ],
+      "longest_cm": 11,
+      "shortest_cm": 11,
+      "aspect_ratio": 1.0,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cube_5.usd",
+        "mass": 0.9317
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.057,
+          "prob": 1.0,
+          "support_margin": 0.055,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cube_6",
+      "type": "cube",
+      "dims_cm": [
+        14,
+        14,
+        14
+      ],
+      "longest_cm": 14,
+      "shortest_cm": 14,
+      "aspect_ratio": 1.0,
+      "pickable": false,
+      "pick_axes": [],
+      "modes_expected": [
+        "slide",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place"
+      ],
+      "tags": [
+        "large_push_place_only"
+      ],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cube_6.usd",
+        "mass": 1.9208
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.07200000000000001,
+          "prob": 1.0,
+          "support_margin": 0.07,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cyl_1",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 10,
+        "height": 2.5
+      },
+      "longest_cm": 10,
+      "shortest_cm": 2.5,
+      "aspect_ratio": 0.25,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": true
+      },
+      "modes_expected": [
+        "slide",
+        "roll_on_side"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cyl_1.usd",
+        "mass": 0.1374
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.0145,
+          "prob": 0.7572808703641283,
+          "support_margin": 0.0499,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            -0.46186294653951143,
+            0.46186294653951143,
+            0.5354275101391789,
+            0.5354275101391789
+          ],
+          "spawn_z": 0.051939772810258626,
+          "prob": 0.24271912963587164,
+          "support_margin": 0.0,
+          "rolling": true
+        }
+      ]
+    },
+    {
+      "id": "cyl_2",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 12,
+        "height": 3.0
+      },
+      "longest_cm": 12,
+      "shortest_cm": 3.0,
+      "aspect_ratio": 0.25,
+      "pickable": true,
+      "pick_axes": {
+        "upright": false,
+        "on_side": true
+      },
+      "modes_expected": [
+        "slide",
+        "roll_on_side"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cyl_2.usd",
+        "mass": 0.2375
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.017,
+          "prob": 0.7572808703641161,
+          "support_margin": 0.0599,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            0.28654888114987503,
+            -0.28654888114987503,
+            0.6464439176848636,
+            0.6464439176848636
+          ],
+          "spawn_z": 0.061927727372310344,
+          "prob": 0.242719129635884,
+          "support_margin": 0.0,
+          "rolling": true
+        }
+      ]
+    },
+    {
+      "id": "cyl_3",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 8,
+        "height": 3.0
+      },
+      "longest_cm": 8,
+      "shortest_cm": 3.0,
+      "aspect_ratio": 0.38,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": true
+      },
+      "modes_expected": [
+        "slide",
+        "roll_on_side"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cyl_3.usd",
+        "mass": 0.1056
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.017,
+          "prob": 0.6486291145013342,
+          "support_margin": 0.04,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            0.12088831086686906,
+            -0.12088831086686906,
+            0.6966965022847145,
+            0.6966965022847145
+          ],
+          "spawn_z": 0.041951818248206894,
+          "prob": 0.3513708854986659,
+          "support_margin": 0.0,
+          "rolling": true
+        }
+      ]
+    },
+    {
+      "id": "cyl_4",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 6,
+        "height": 5.0
+      },
+      "longest_cm": 6,
+      "shortest_cm": 5.0,
+      "aspect_ratio": 0.83,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": true
+      },
+      "modes_expected": [
+        "slide",
+        "topple",
+        "roll_on_side"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cyl_4.usd",
+        "mass": 0.099
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.7068938138442669,
+            0.706893813844267,
+            -0.017353269107200028,
+            -0.017353269107200024
+          ],
+          "spawn_z": 0.03196386368615517,
+          "prob": 0.6404879687363715,
+          "support_margin": 0.0,
+          "rolling": true
+        },
+        {
+          "quat_wxyz": [
+            -0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.027000000000000003,
+          "prob": 0.35951203126362863,
+          "support_margin": 0.03,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cyl_5",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 7,
+        "height": 7.0
+      },
+      "longest_cm": 7,
+      "shortest_cm": 7,
+      "aspect_ratio": 1.0,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": true
+      },
+      "modes_expected": [
+        "slide",
+        "topple",
+        "roll_on_side"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cyl_5.usd",
+        "mass": 0.1886
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            0.05201800177635376,
+            -0.05201800177635376,
+            0.7051908447301306,
+            0.7051908447301306
+          ],
+          "spawn_z": 0.036957840967181035,
+          "prob": 0.7073908202950542,
+          "support_margin": 0.0,
+          "rolling": true
+        },
+        {
+          "quat_wxyz": [
+            -0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.037000000000000005,
+          "prob": 0.2926091797049458,
+          "support_margin": 0.035,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cyl_6",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 5,
+        "height": 5.0
+      },
+      "longest_cm": 5,
+      "shortest_cm": 5,
+      "aspect_ratio": 1.0,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": true
+      },
+      "modes_expected": [
+        "slide",
+        "topple",
+        "roll_on_side"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cyl_6.usd",
+        "mass": 0.0687
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.12088831086686927,
+            0.12088831086686927,
+            0.6966965022847145,
+            0.6966965022847145
+          ],
+          "spawn_z": 0.02696988640512931,
+          "prob": 0.7073908202950475,
+          "support_margin": 0.0,
+          "rolling": true
+        },
+        {
+          "quat_wxyz": [
+            -0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.027000000000000003,
+          "prob": 0.29260917970495237,
+          "support_margin": 0.025,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cyl_7",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 8,
+        "height": 6.0
+      },
+      "longest_cm": 8,
+      "shortest_cm": 6.0,
+      "aspect_ratio": 0.75,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": true
+      },
+      "modes_expected": [
+        "slide",
+        "topple",
+        "roll_on_side"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cyl_7.usd",
+        "mass": 0.2111
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            0.4618629465395112,
+            -0.4618629465395112,
+            0.5354275101391789,
+            0.5354275101391789
+          ],
+          "spawn_z": 0.041951818248206894,
+          "prob": 0.600308561902231,
+          "support_margin": 0.0,
+          "rolling": true
+        },
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.032,
+          "prob": 0.3996914380977689,
+          "support_margin": 0.04,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cyl_8",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 5,
+        "height": 8.0
+      },
+      "longest_cm": 8.0,
+      "shortest_cm": 5,
+      "aspect_ratio": 1.6,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": true
+      },
+      "modes_expected": [
+        "topple",
+        "slide"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cyl_8.usd",
+        "mass": 0.11
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.05201800177635411,
+            0.05201800177635411,
+            0.7051908447301307,
+            0.7051908447301307
+          ],
+          "spawn_z": 0.02696988640512931,
+          "prob": 0.8481896108616147,
+          "support_margin": 0.0,
+          "rolling": true
+        },
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.042,
+          "prob": 0.15181038913838535,
+          "support_margin": 0.025,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cyl_9",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 6,
+        "height": 9.0
+      },
+      "longest_cm": 9.0,
+      "shortest_cm": 6,
+      "aspect_ratio": 1.5,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": true
+      },
+      "modes_expected": [
+        "topple",
+        "slide"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cyl_9.usd",
+        "mass": 0.1781
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.7017890091036166,
+            0.7017890091036167,
+            -0.08655741852298934,
+            -0.08655741852298934
+          ],
+          "spawn_z": 0.03196386368615517,
+          "prob": 0.8322559158691978,
+          "support_margin": 0.0,
+          "rolling": true
+        },
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.047,
+          "prob": 0.16774408413080216,
+          "support_margin": 0.03,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cyl_10",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 5,
+        "height": 9.0
+      },
+      "longest_cm": 9.0,
+      "shortest_cm": 5,
+      "aspect_ratio": 1.8,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": true
+      },
+      "modes_expected": [
+        "topple",
+        "slide"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cyl_10.usd",
+        "mass": 0.1237
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.5354275101391789,
+            0.5354275101391788,
+            0.46186294653951143,
+            0.46186294653951143
+          ],
+          "spawn_z": 0.02696988640512931,
+          "prob": 0.8743228458698477,
+          "support_margin": 0.0,
+          "rolling": true
+        },
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.047,
+          "prob": 0.12567715413015232,
+          "support_margin": 0.025,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cyl_11",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 4,
+        "height": 10.0
+      },
+      "longest_cm": 10.0,
+      "shortest_cm": 4,
+      "aspect_ratio": 2.5,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": true
+      },
+      "modes_expected": [
+        "topple",
+        "slide"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cyl_11.usd",
+        "mass": 0.088
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.08655741852298933,
+            0.08655741852298934,
+            0.7017890091036167,
+            0.7017890091036166
+          ],
+          "spawn_z": 0.021975909124103445,
+          "prob": 0.9285795230088578,
+          "support_margin": 0.0,
+          "rolling": true
+        },
+        {
+          "quat_wxyz": [
+            -0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.052000000000000005,
+          "prob": 0.07142047699114226,
+          "support_margin": 0.02,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cyl_12",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 4,
+        "height": 12.0
+      },
+      "longest_cm": 12.0,
+      "shortest_cm": 4,
+      "aspect_ratio": 3.0,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": false
+      },
+      "modes_expected": [
+        "topple",
+        "slide"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cyl_12.usd",
+        "mass": 0.1056
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.7068938138442669,
+            0.706893813844267,
+            0.017353269107200028,
+            0.017353269107200024
+          ],
+          "spawn_z": 0.021975909124103445,
+          "prob": 0.9487594696814735,
+          "support_margin": 0.0,
+          "rolling": true
+        },
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.062,
+          "prob": 0.05124053031852645,
+          "support_margin": 0.02,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cyl_13",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 5,
+        "height": 12.0
+      },
+      "longest_cm": 12.0,
+      "shortest_cm": 5,
+      "aspect_ratio": 2.4,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": false
+      },
+      "modes_expected": [
+        "topple",
+        "slide"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cyl_13.usd",
+        "mass": 0.1649
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            0.43503442969974687,
+            -0.4350344296997469,
+            0.5574451048989632,
+            0.5574451048989632
+          ],
+          "spawn_z": 0.02696988640512931,
+          "prob": 0.9231865691995885,
+          "support_margin": 0.0,
+          "rolling": true
+        },
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.062,
+          "prob": 0.07681343080041154,
+          "support_margin": 0.025,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cyl_14",
+      "type": "cylinder",
+      "dims_cm": {
+        "diameter": 3.5,
+        "height": 10.0
+      },
+      "longest_cm": 10.0,
+      "shortest_cm": 3.5,
+      "aspect_ratio": 2.86,
+      "pickable": true,
+      "pick_axes": {
+        "upright": true,
+        "on_side": true
+      },
+      "modes_expected": [
+        "topple",
+        "slide"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cyl_14.usd",
+        "mass": 0.0673
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.22180648577045436,
+            0.22180648577045436,
+            0.671417815425061,
+            0.671417815425061
+          ],
+          "spawn_z": 0.01947892048359052,
+          "prob": 0.943941061847613,
+          "support_margin": 0.0,
+          "rolling": true
+        },
+        {
+          "quat_wxyz": [
+            -0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.052000000000000005,
+          "prob": 0.056058938152387015,
+          "support_margin": 0.0175,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cuboid_1",
+      "type": "cuboid",
+      "dims_cm": [
+        5,
+        5,
+        10
+      ],
+      "longest_cm": 10,
+      "shortest_cm": 5,
+      "aspect_ratio": 2.0,
+      "pickable": true,
+      "pick_axes": [
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_5_5_10"
+      ],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cuboid_1.usd",
+        "mass": 0.175
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            0.0,
+            0.0,
+            0.7071067811865475,
+            0.7071067811865475
+          ],
+          "spawn_z": 0.027000000000000003,
+          "prob": 0.8718115663020501,
+          "support_margin": 0.025,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            -0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.052000000000000005,
+          "prob": 0.1281884336979498,
+          "support_margin": 0.025,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cuboid_2",
+      "type": "cuboid",
+      "dims_cm": [
+        6,
+        6,
+        12
+      ],
+      "longest_cm": 12,
+      "shortest_cm": 6,
+      "aspect_ratio": 2.0,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_6_6_12"
+      ],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cuboid_2.usd",
+        "mass": 0.3024
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            0.0,
+            0.0,
+            0.7071067811865475,
+            0.7071067811865475
+          ],
+          "spawn_z": 0.032,
+          "prob": 0.8718115663020501,
+          "support_margin": 0.03,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            -0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.062,
+          "prob": 0.1281884336979498,
+          "support_margin": 0.03,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cuboid_3",
+      "type": "cuboid",
+      "dims_cm": [
+        5,
+        10,
+        10
+      ],
+      "longest_cm": 10,
+      "shortest_cm": 5,
+      "aspect_ratio": 2.0,
+      "pickable": true,
+      "pick_axes": [
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_5_10_10"
+      ],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cuboid_3.usd",
+        "mass": 0.35
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.5,
+            0.5,
+            0.5,
+            0.5
+          ],
+          "spawn_z": 0.027000000000000003,
+          "prob": 0.5903344706017327,
+          "support_margin": 0.05,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            0.0,
+            0.0,
+            0.7071067811865475,
+            0.7071067811865475
+          ],
+          "spawn_z": 0.052000000000000005,
+          "prob": 0.40966552939826717,
+          "support_margin": 0.025,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cuboid_4",
+      "type": "cuboid",
+      "dims_cm": [
+        4,
+        8,
+        8
+      ],
+      "longest_cm": 8,
+      "shortest_cm": 4,
+      "aspect_ratio": 2.0,
+      "pickable": true,
+      "pick_axes": [
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_4_8_8"
+      ],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cuboid_4.usd",
+        "mass": 0.1792
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.5,
+            0.5,
+            0.5,
+            0.5
+          ],
+          "spawn_z": 0.022,
+          "prob": 0.5903344706017332,
+          "support_margin": 0.04,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            0.0,
+            0.0,
+            0.7071067811865475,
+            0.7071067811865475
+          ],
+          "spawn_z": 0.042,
+          "prob": 0.40966552939826684,
+          "support_margin": 0.02,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cuboid_5",
+      "type": "cuboid",
+      "dims_cm": [
+        3,
+        6,
+        9
+      ],
+      "longest_cm": 9,
+      "shortest_cm": 3,
+      "aspect_ratio": 3.0,
+      "pickable": true,
+      "pick_axes": [
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_3_6_9"
+      ],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cuboid_5.usd",
+        "mass": 0.1134
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.5,
+            0.5,
+            0.5,
+            0.5
+          ],
+          "spawn_z": 0.017,
+          "prob": 0.6450215618741105,
+          "support_margin": 0.03,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            0.0,
+            0.0,
+            0.7071067811865475,
+            0.7071067811865475
+          ],
+          "spawn_z": 0.032,
+          "prob": 0.24272719599602743,
+          "support_margin": 0.015,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            -0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.047,
+          "prob": 0.11225124212986193,
+          "support_margin": 0.015,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cuboid_6",
+      "type": "cuboid",
+      "dims_cm": [
+        4,
+        8,
+        12
+      ],
+      "longest_cm": 12,
+      "shortest_cm": 4,
+      "aspect_ratio": 3.0,
+      "pickable": true,
+      "pick_axes": [
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_4_8_12"
+      ],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cuboid_6.usd",
+        "mass": 0.2688
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.5,
+            0.5,
+            -0.5,
+            -0.5
+          ],
+          "spawn_z": 0.022,
+          "prob": 0.6450215618741105,
+          "support_margin": 0.04,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            -0.7071067811865475,
+            0.7071067811865475,
+            -0.0,
+            0.0
+          ],
+          "spawn_z": 0.042,
+          "prob": 0.2427271959960275,
+          "support_margin": 0.02,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.062,
+          "prob": 0.11225124212986204,
+          "support_margin": 0.02,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cuboid_7",
+      "type": "cuboid",
+      "dims_cm": [
+        5,
+        10,
+        15
+      ],
+      "longest_cm": 15,
+      "shortest_cm": 5,
+      "aspect_ratio": 3.0,
+      "pickable": true,
+      "pick_axes": [
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_5_10_15"
+      ],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cuboid_7.usd",
+        "mass": 0.525
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.5,
+            0.5,
+            -0.5,
+            -0.5
+          ],
+          "spawn_z": 0.027000000000000003,
+          "prob": 0.6450215618741105,
+          "support_margin": 0.05,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            -0.7071067811865475,
+            0.7071067811865475,
+            -0.0,
+            0.0
+          ],
+          "spawn_z": 0.052000000000000005,
+          "prob": 0.2427271959960275,
+          "support_margin": 0.025,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.077,
+          "prob": 0.11225124212986204,
+          "support_margin": 0.025,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cuboid_8",
+      "type": "cuboid",
+      "dims_cm": [
+        4,
+        4,
+        12
+      ],
+      "longest_cm": 12,
+      "shortest_cm": 4,
+      "aspect_ratio": 3.0,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_4_4_12"
+      ],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cuboid_8.usd",
+        "mass": 0.1344
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.5,
+            0.5,
+            -0.5,
+            -0.5
+          ],
+          "spawn_z": 0.022,
+          "prob": 0.9362314391414802,
+          "support_margin": 0.02,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.062,
+          "prob": 0.06376856085851987,
+          "support_margin": 0.02,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cuboid_9",
+      "type": "cuboid",
+      "dims_cm": [
+        5,
+        5,
+        15
+      ],
+      "longest_cm": 15,
+      "shortest_cm": 5,
+      "aspect_ratio": 3.0,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_5_5_15"
+      ],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cuboid_9.usd",
+        "mass": 0.2625
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.5,
+            0.5,
+            -0.5,
+            -0.5
+          ],
+          "spawn_z": 0.027000000000000003,
+          "prob": 0.9362314391414802,
+          "support_margin": 0.025,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.077,
+          "prob": 0.06376856085851987,
+          "support_margin": 0.025,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cuboid_10",
+      "type": "cuboid",
+      "dims_cm": [
+        3,
+        6,
+        12
+      ],
+      "longest_cm": 12,
+      "shortest_cm": 3,
+      "aspect_ratio": 4.0,
+      "pickable": true,
+      "pick_axes": [
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_3_6_12"
+      ],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cuboid_10.usd",
+        "mass": 0.1512
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.5,
+            0.5,
+            0.5,
+            0.5
+          ],
+          "spawn_z": 0.017,
+          "prob": 0.6688330136073755,
+          "support_margin": 0.03,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            0.0,
+            0.0,
+            0.7071067811865475,
+            0.7071067811865475
+          ],
+          "spawn_z": 0.032,
+          "prob": 0.2619797608689094,
+          "support_margin": 0.015,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.062,
+          "prob": 0.0691872255237151,
+          "support_margin": 0.015,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cuboid_11",
+      "type": "cuboid",
+      "dims_cm": [
+        4,
+        8,
+        16
+      ],
+      "longest_cm": 16,
+      "shortest_cm": 4,
+      "aspect_ratio": 4.0,
+      "pickable": true,
+      "pick_axes": [
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_4_8_16"
+      ],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cuboid_11.usd",
+        "mass": 0.3584
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.5,
+            0.5,
+            0.5,
+            0.5
+          ],
+          "spawn_z": 0.022,
+          "prob": 0.6688330136073755,
+          "support_margin": 0.04,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            0.0,
+            0.0,
+            0.7071067811865475,
+            0.7071067811865475
+          ],
+          "spawn_z": 0.042,
+          "prob": 0.2619797608689094,
+          "support_margin": 0.02,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.082,
+          "prob": 0.0691872255237151,
+          "support_margin": 0.02,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cuboid_12",
+      "type": "cuboid",
+      "dims_cm": [
+        4,
+        6,
+        8
+      ],
+      "longest_cm": 8,
+      "shortest_cm": 4,
+      "aspect_ratio": 2.0,
+      "pickable": true,
+      "pick_axes": [
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_4_6_8"
+      ],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cuboid_12.usd",
+        "mass": 0.1344
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.5,
+            0.5,
+            0.5,
+            0.5
+          ],
+          "spawn_z": 0.022,
+          "prob": 0.5343461346466304,
+          "support_margin": 0.03,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            -0.7071067811865475,
+            0.7071067811865475,
+            -0.0,
+            0.0
+          ],
+          "spawn_z": 0.032,
+          "prob": 0.29271156911572055,
+          "support_margin": 0.02,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.042,
+          "prob": 0.17294229623764903,
+          "support_margin": 0.02,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cuboid_13",
+      "type": "cuboid",
+      "dims_cm": [
+        5,
+        7.5,
+        10
+      ],
+      "longest_cm": 10,
+      "shortest_cm": 5,
+      "aspect_ratio": 2.0,
+      "pickable": true,
+      "pick_axes": [
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_5_7.5_10"
+      ],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cuboid_13.usd",
+        "mass": 0.2625
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.5,
+            0.5,
+            0.5,
+            0.5
+          ],
+          "spawn_z": 0.027000000000000003,
+          "prob": 0.5343461346466305,
+          "support_margin": 0.0375,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            -0.7071067811865475,
+            0.7071067811865475,
+            -0.0,
+            0.0
+          ],
+          "spawn_z": 0.0395,
+          "prob": 0.2927115691157204,
+          "support_margin": 0.025,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            -0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.052000000000000005,
+          "prob": 0.1729422962376491,
+          "support_margin": 0.025,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cuboid_14",
+      "type": "cuboid",
+      "dims_cm": [
+        4,
+        12,
+        12
+      ],
+      "longest_cm": 12,
+      "shortest_cm": 4,
+      "aspect_ratio": 3.0,
+      "pickable": true,
+      "pick_axes": [
+        0
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_4_12_12"
+      ],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cuboid_14.usd",
+        "mass": 0.4032
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.5,
+            0.5,
+            0.5,
+            0.5
+          ],
+          "spawn_z": 0.022,
+          "prob": 0.7128674137425876,
+          "support_margin": 0.06,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            0.0,
+            0.0,
+            0.7071067811865475,
+            0.7071067811865475
+          ],
+          "spawn_z": 0.062,
+          "prob": 0.2871325862574124,
+          "support_margin": 0.02,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cuboid_15",
+      "type": "cuboid",
+      "dims_cm": [
+        3,
+        3,
+        12
+      ],
+      "longest_cm": 12,
+      "shortest_cm": 3,
+      "aspect_ratio": 4.0,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_3_3_12"
+      ],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cuboid_15.usd",
+        "mass": 0.0756
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            0.0,
+            0.0,
+            0.7071067811865475,
+            0.7071067811865475
+          ],
+          "spawn_z": 0.017,
+          "prob": 0.9625301479618456,
+          "support_margin": 0.015,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            -0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.062,
+          "prob": 0.03746985203815444,
+          "support_margin": 0.015,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cuboid_16",
+      "type": "cuboid",
+      "dims_cm": [
+        4,
+        4,
+        16
+      ],
+      "longest_cm": 16,
+      "shortest_cm": 4,
+      "aspect_ratio": 4.0,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_4_4_16"
+      ],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cuboid_16.usd",
+        "mass": 0.1792
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            0.0,
+            0.0,
+            0.7071067811865475,
+            0.7071067811865475
+          ],
+          "spawn_z": 0.022,
+          "prob": 0.9625301479618456,
+          "support_margin": 0.02,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            -0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.082,
+          "prob": 0.03746985203815444,
+          "support_margin": 0.02,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cuboid_17",
+      "type": "cuboid",
+      "dims_cm": [
+        3,
+        9,
+        15
+      ],
+      "longest_cm": 15,
+      "shortest_cm": 3,
+      "aspect_ratio": 5.0,
+      "pickable": true,
+      "pick_axes": [
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_3_9_15"
+      ],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cuboid_17.usd",
+        "mass": 0.2835
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.5,
+            0.5,
+            0.5,
+            0.5
+          ],
+          "spawn_z": 0.017,
+          "prob": 0.7608384455542426,
+          "support_margin": 0.045,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            0.0,
+            0.0,
+            0.7071067811865475,
+            0.7071067811865475
+          ],
+          "spawn_z": 0.047,
+          "prob": 0.17481653496259747,
+          "support_margin": 0.015,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.077,
+          "prob": 0.06434501948315996,
+          "support_margin": 0.015,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cuboid_18",
+      "type": "cuboid",
+      "dims_cm": [
+        5,
+        10,
+        18
+      ],
+      "longest_cm": 18,
+      "shortest_cm": 5,
+      "aspect_ratio": 3.6,
+      "pickable": true,
+      "pick_axes": [
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "rotate"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "ratio_5_10_18"
+      ],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cuboid_18.usd",
+        "mass": 0.63
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.5,
+            0.5,
+            -0.5,
+            -0.5
+          ],
+          "spawn_z": 0.027000000000000003,
+          "prob": 0.6613212159748623,
+          "support_margin": 0.05,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            0.0,
+            0.0,
+            0.7071067811865475,
+            0.7071067811865475
+          ],
+          "spawn_z": 0.052000000000000005,
+          "prob": 0.2556965722018843,
+          "support_margin": 0.025,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.092,
+          "prob": 0.08298221182325348,
+          "support_margin": 0.025,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "triprism_a",
+      "type": "tri_prism",
+      "dims_cm": [
+        6,
+        6,
+        10
+      ],
+      "longest_cm": 10,
+      "shortest_cm": 6,
+      "aspect_ratio": 1.67,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "topple",
+        "roll_edge"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "fill_factor": 0.5,
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "triprism_a.usd",
+        "mass": 0.126
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.6015009550075456,
+            0.6015009550075456,
+            0.37174803446018456,
+            0.3717480344601845
+          ],
+          "spawn_z": 0.015416407864998738,
+          "prob": 0.6233510746910671,
+          "support_margin": 0.0313,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            0.0,
+            0.0,
+            0.7071067811865475,
+            0.7071067811865475
+          ],
+          "spawn_z": 0.032,
+          "prob": 0.2810137053540297,
+          "support_margin": 0.03,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            -0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.052000000000000005,
+          "prob": 0.0956352199549032,
+          "support_margin": 0.0179,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "triprism_b",
+      "type": "tri_prism",
+      "dims_cm": [
+        5,
+        5,
+        12
+      ],
+      "longest_cm": 12,
+      "shortest_cm": 5,
+      "aspect_ratio": 2.4,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1
+      ],
+      "modes_expected": [
+        "topple",
+        "slide"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "fill_factor": 0.5,
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "triprism_b.usd",
+        "mass": 0.105
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.6015009550075456,
+            0.6015009550075456,
+            0.37174803446018456,
+            0.3717480344601845
+          ],
+          "spawn_z": 0.013180339887498949,
+          "prob": 0.6536097431099014,
+          "support_margin": 0.0261,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            0.0,
+            0.0,
+            0.7071067811865475,
+            0.7071067811865475
+          ],
+          "spawn_z": 0.027000000000000003,
+          "prob": 0.2960683537599767,
+          "support_margin": 0.025,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            -0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.062,
+          "prob": 0.05032190313012201,
+          "support_margin": 0.0149,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "triprism_c",
+      "type": "tri_prism",
+      "dims_cm": [
+        8,
+        8,
+        8
+      ],
+      "longest_cm": 8,
+      "shortest_cm": 8,
+      "aspect_ratio": 1.0,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "topple"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "fill_factor": 0.5,
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "triprism_c.usd",
+        "mass": 0.1792
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.6015009550075456,
+            0.6015009550075456,
+            0.37174803446018456,
+            0.37174803446018456
+          ],
+          "spawn_z": 0.01988854381999832,
+          "prob": 0.5467579338957878,
+          "support_margin": 0.04,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            0.0,
+            0.0,
+            0.7071067811865475,
+            0.7071067811865475
+          ],
+          "spawn_z": 0.042,
+          "prob": 0.24340589700223964,
+          "support_margin": 0.04,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            -0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.042,
+          "prob": 0.20983616910197256,
+          "support_margin": 0.0239,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "hexprism_tall",
+      "type": "hex_prism",
+      "dims_cm": [
+        6,
+        6,
+        10
+      ],
+      "longest_cm": 10,
+      "shortest_cm": 6,
+      "aspect_ratio": 1.67,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "topple",
+        "slide"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "fill_factor": 0.65,
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "hexprism_tall.usd",
+        "mass": 0.1638
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.6123724356957946,
+            0.6123724356957947,
+            0.35355339059327373,
+            0.3535533905932737
+          ],
+          "spawn_z": 0.031999999999999994,
+          "prob": 0.846267793356659,
+          "support_margin": 0.0173,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            0.0,
+            1.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.052000000000000005,
+          "prob": 0.15373220664334103,
+          "support_margin": 0.03,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "hexprism_flat",
+      "type": "hex_prism",
+      "dims_cm": [
+        9,
+        9,
+        4
+      ],
+      "longest_cm": 9,
+      "shortest_cm": 4,
+      "aspect_ratio": 2.25,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "roll_facet"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "fill_factor": 0.65,
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "hexprism_flat.usd",
+        "mass": 0.1474
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.022,
+          "prob": 0.6094500972181012,
+          "support_margin": 0.045,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            -0.6123724356957946,
+            0.6123724356957946,
+            -0.35355339059327384,
+            -0.3535533905932738
+          ],
+          "spawn_z": 0.04699999999999999,
+          "prob": 0.3905499027818988,
+          "support_margin": 0.02,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "hexprism_mid",
+      "type": "hex_prism",
+      "dims_cm": [
+        7,
+        7,
+        7
+      ],
+      "longest_cm": 7,
+      "shortest_cm": 7,
+      "aspect_ratio": 1.0,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "topple"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "fill_factor": 0.65,
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "hexprism_mid.usd",
+        "mass": 0.1561
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            0.3535533905932737,
+            -0.3535533905932737,
+            0.6123724356957947,
+            0.6123724356957947
+          ],
+          "spawn_z": 0.037,
+          "prob": 0.6901603684878478,
+          "support_margin": 0.0202,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            1.0,
+            -0.0,
+            0.0,
+            -0.0
+          ],
+          "spawn_z": 0.037000000000000005,
+          "prob": 0.30983963151215227,
+          "support_margin": 0.035,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "pyramid_sq",
+      "type": "pyramid",
+      "dims_cm": [
+        8,
+        8,
+        8
+      ],
+      "longest_cm": 8,
+      "shortest_cm": 8,
+      "aspect_ratio": 1.0,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "tip_back"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "fill_factor": 0.33,
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "pyramid_sq.usd",
+        "mass": 0.1183
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.20118858648686586,
+            0.3255299710842968,
+            0.7858988711506307,
+            0.48571221409126397
+          ],
+          "spawn_z": 0.019888543819998314,
+          "prob": 0.7048327646991334,
+          "support_margin": 0.0219,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.042,
+          "prob": 0.2951672353008666,
+          "support_margin": 0.04,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "pyramid_tall",
+      "type": "pyramid",
+      "dims_cm": [
+        6,
+        6,
+        11
+      ],
+      "longest_cm": 11,
+      "shortest_cm": 6,
+      "aspect_ratio": 1.83,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "topple",
+        "slide"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "fill_factor": 0.33,
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "pyramid_tall.usd",
+        "mass": 0.0915
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.5607890141378097,
+            0.7342132334789514,
+            -0.3041210789807854,
+            -0.23228641528571808
+          ],
+          "spawn_z": 0.016471457318565984,
+          "prob": 0.8171381369385385,
+          "support_margin": 0.0203,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.057,
+          "prob": 0.1828618630614615,
+          "support_margin": 0.03,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "cone_a",
+      "type": "cone",
+      "dims_cm": [
+        7,
+        7,
+        9
+      ],
+      "longest_cm": 9,
+      "shortest_cm": 7,
+      "aspect_ratio": 1.29,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "roll_on_side",
+        "tip_back"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "fill_factor": 0.33,
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "cone_a.usd",
+        "mass": 0.1019
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.47714897753796165,
+            0.6972133102212117,
+            0.4415054594836267,
+            0.3021512577021816
+          ],
+          "spawn_z": 0.0182930123633121,
+          "prob": 0.7705325411775724,
+          "support_margin": 0.0,
+          "rolling": true
+        },
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.04699999999999999,
+          "prob": 0.22946745882242753,
+          "support_margin": 0.035,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "tetra_a",
+      "type": "tetra",
+      "dims_cm": [
+        8,
+        8,
+        8
+      ],
+      "longest_cm": 8,
+      "shortest_cm": 8,
+      "aspect_ratio": 1.0,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "slide",
+        "tip"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "fill_factor": 0.17,
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "tetra_a.usd",
+        "mass": 0.0609
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            0.8204732385702833,
+            -0.42470820027786693,
+            0.1759198966061612,
+            0.33985114297998736
+          ],
+          "spawn_z": 0.025094010767585037,
+          "prob": 1.0,
+          "support_margin": 0.0327,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "l_block_a",
+      "type": "l_block",
+      "dims_cm": [
+        10,
+        10,
+        4
+      ],
+      "longest_cm": 10,
+      "shortest_cm": 4,
+      "aspect_ratio": 2.5,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1
+      ],
+      "modes_expected": [
+        "slide",
+        "rotate",
+        "topple"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "adversarial",
+        "non_convex",
+        "com_offset"
+      ],
+      "fill_factor": 0.75,
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "l_block_a.usd",
+        "mass": 0.21,
+        "collision_approximation": "convexDecomposition"
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.022,
+          "prob": 0.6209210261496384,
+          "support_margin": 0.0388,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            -0.5,
+            0.5,
+            0.5,
+            0.5
+          ],
+          "spawn_z": 0.052000000000000005,
+          "prob": 0.23182409408282706,
+          "support_margin": 0.02,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            -0.6532814824381882,
+            0.6532814824381882,
+            -0.2705980500730985,
+            -0.27059805007309845
+          ],
+          "spawn_z": 0.030284271247461907,
+          "prob": 0.09216863632687851,
+          "support_margin": 0.02,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            -0.5,
+            0.5,
+            -0.5,
+            -0.5
+          ],
+          "spawn_z": 0.052000000000000005,
+          "prob": 0.055086243440656005,
+          "support_margin": 0.0013,
+          "rolling": false
+        }
+      ]
+    },
+    {
+      "id": "l_block_b",
+      "type": "l_block",
+      "dims_cm": [
+        8,
+        8,
+        8
+      ],
+      "longest_cm": 8,
+      "shortest_cm": 8,
+      "aspect_ratio": 1.0,
+      "pickable": true,
+      "pick_axes": [
+        0,
+        1,
+        2
+      ],
+      "modes_expected": [
+        "topple",
+        "rotate",
+        "slide"
+      ],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [
+        "adversarial",
+        "non_convex",
+        "com_offset"
+      ],
+      "fill_factor": 0.75,
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "l_block_b.usd",
+        "mass": 0.2688,
+        "collision_approximation": "convexDecomposition"
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            0.0,
+            0.0,
+            0.7071067811865475,
+            0.7071067811865475
+          ],
+          "spawn_z": 0.042,
+          "prob": 0.42161303389226623,
+          "support_margin": 0.031,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "spawn_z": 0.042,
+          "prob": 0.29084177606237815,
+          "support_margin": 0.031,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            -0.6532814824381882,
+            0.6532814824381882,
+            -0.2705980500730985,
+            -0.2705980500730985
+          ],
+          "spawn_z": 0.024627416997969526,
+          "prob": 0.1736554684831521,
+          "support_margin": 0.0339,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            -0.5,
+            0.5,
+            -0.5,
+            -0.49999999999999994
+          ],
+          "spawn_z": 0.041999999999999996,
+          "prob": 0.11388972156220362,
+          "support_margin": 0.001,
+          "rolling": false
+        }
+      ]
+    }
+  ]
+}
