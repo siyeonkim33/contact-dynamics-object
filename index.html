@@ -146,9 +146,9 @@ import * as THREE from 'three';
 // ---------------------------------------------------------------------------
 let MANIFEST;
 try {
-  const res = await fetch('./primcontact_v1.json');
+  const res = await fetch('./prim/primcontact_v1.json');
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  MANIFEST = await res.json();
+  MANIFEST = await res.prim/json();
 } catch (e) {
   document.getElementById('app').style.display = 'none';
   document.getElementById('loaderr').style.display = 'block';
