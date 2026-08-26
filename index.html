@@ -148,7 +148,7 @@ let MANIFEST;
 try {
   const res = await fetch('./prim/primcontact_v1.json');
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  MANIFEST = await res.prim.json();
+  MANIFEST = await res.json();
 } catch (e) {
   document.getElementById('app').style.display = 'none';
   document.getElementById('loaderr').style.display = 'block';
