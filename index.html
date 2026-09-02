@@ -389,7 +389,10 @@ function mergeSceneGeoms(root){
     g.applyMatrix4(ch.matrixWorld);
     positions.push(g.attributes.position.array);
     if (g.attributes.uv) uvs.push(g.attributes.uv.array); else allHaveUv = false;
-    if (!map && ch.material && ch.material.map) map = ch.material.map;
+    // material can be an array (multi-primitive glTF meshes)
+    for (const mm of (Array.isArray(ch.material) ? ch.material : [ch.material])){
+      if (!map && mm && mm.map) map = mm.map;
+    }
   });
   const bg = new THREE.BufferGeometry();
   bg.setAttribute('position', _concat(positions, 3));
@@ -425,6 +428,9 @@ async function loadPreviewMesh(it){
       it.mesh.material.map = merged.map;
       it.mesh.material.needsUpdate = true;
       it.textured = true;
+      console.log(`${it.o.id}: textured preview applied`);
+    } else {
+      console.warn(`${it.o.id}: preview loaded but no texture/uv found in GLB`);
     }
     it.mesh.material.transparent = false;
     it.mesh.material.opacity = 1;
