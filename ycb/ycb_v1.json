@@ -1,0 +1,130 @@
+{
+  "dataset": "YCB-USD-v1",
+  "description": "YCB object set converted to sim-ready USD assets in a canonical frame (OBB-aligned axes, bbox-centered origin). Rest poses are embedded per object under objects[i].rest_poses, computed on the collision-mesh convex hull; assets live next to this file. Mass is a fixed placeholder -- the sim authors the real value at scene-construction time.",
+  "gripper": {
+    "model": "Robotiq 2F-140",
+    "stroke_cm": 14.0,
+    "pick_max_cm": 11.0,
+    "pick_pref_min_cm": 6.0
+  },
+  "sim_defaults": {
+    "friction": 0.2,
+    "restitution": 0.0,
+    "mass": 0.5,
+    "asset_dir": ".",
+    "init_pose": {
+      "method": "rest_poses_embedded",
+      "sampling": "uniform_over_poses",
+      "yaw": "uniform",
+      "jitter_deg": 1.0
+    }
+  },
+  "generation": {
+    "frame": "centered",
+    "align_axes": true,
+    "prob_threshold": 0.02,
+    "min_tip_deg": 5.0,
+    "merge_symmetric": true,
+    "rest_pose_mesh": "collision_convex_hull"
+  },
+  "counts": {
+    "total": 1,
+    "graspable": 1
+  },
+  "objects": [
+    {
+      "id": "bleach_cleanser",
+      "type": "ycb",
+      "dims_cm": [
+        9.8,
+        6.8,
+        25.4
+      ],
+      "longest_cm": 25.4,
+      "shortest_cm": 6.8,
+      "aspect_ratio": 3.74,
+      "graspable": true,
+      "modes_expected": [],
+      "skills": [
+        "push",
+        "place",
+        "pick"
+      ],
+      "tags": [],
+      "sim": {
+        "object_type": "usd",
+        "asset_filename": "bleach_cleanser.usd",
+        "mass": 0.5,
+        "collision_approximation": "convexDecomposition",
+        "preview_mesh": "preview/bleach_cleanser.glb"
+      },
+      "rest_poses": [
+        {
+          "quat_wxyz": [
+            -0.0013383657596279677,
+            0.001408933257591768,
+            0.7250291136148098,
+            0.6887154768807597
+          ],
+          "spawn_z": 0.03020599386001776,
+          "prob": 0.40038847755743073,
+          "support_margin": 0.0138,
+          "tip_angle_deg": 24.4,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            -0.6969207981661737,
+            0.7171031560887455,
+            0.00575779655841962,
+            0.005595747472453813
+          ],
+          "spawn_z": 0.03276889992812135,
+          "prob": 0.39912821995722303,
+          "support_margin": 0.014,
+          "tip_angle_deg": 24.7,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            -0.5163800441307136,
+            0.5371128553967881,
+            0.48081413116399974,
+            0.46225447738673076
+          ],
+          "spawn_z": 0.0468943554118365,
+          "prob": 0.09047749927493745,
+          "support_margin": 0.0091,
+          "tip_angle_deg": 11.2,
+          "rolling": false
+        },
+        {
+          "quat_wxyz": [
+            0.47410850202660276,
+            -0.4986729842180191,
+            0.5258906367277328,
+            0.4999854211067415
+          ],
+          "spawn_z": 0.047552321849347955,
+          "prob": 0.07580966085732667,
+          "support_margin": 0.0,
+          "tip_angle_deg": 0.0,
+          "rolling": true
+        },
+        {
+          "quat_wxyz": [
+            0.6560698143361404,
+            -0.022048785406523642,
+            0.02533836224191699,
+            0.7539523971564362
+          ],
+          "spawn_z": 0.12606553400067985,
+          "prob": 0.03419614235308222,
+          "support_margin": 0.0296,
+          "tip_angle_deg": 16.5,
+          "rolling": false
+        }
+      ]
+    }
+  ]
+}
