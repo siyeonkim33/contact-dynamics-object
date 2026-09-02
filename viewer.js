@@ -136,7 +136,7 @@ for (const o of OBJS){
 // otherwise the gripper collides with it; vertical pushes always fit.
 // Computed per rest pose from the actual geometry; a value already present
 // in the manifest (offline computation) wins.
-const H_PUSH_MIN_M = 0.07;
+const H_PUSH_MIN_M = 0.085;
 function computePushFeasibility(it, force=false){
   const pos = it.mesh.geometry.attributes.position;
   if (!pos) return;
@@ -575,7 +575,7 @@ function showCard(it, pinned){
       <tr><td class="k">skills</td><td class="v">${(o.skills||[]).join(', ') || '—'}</td></tr>
     </table>
     <div class="badge ${isGraspable(o)?'yes':'no'}">
-      ${isGraspable(o)?'GRASPABLE · 2F-140':'NOT GRASPABLE · push / place only'}
+      ${isGraspable(o)?'GRASPABLE · 2F-140':'NOT GRASPABLE · push only'}
     </div>
     <div class="badge ${PUSH_BADGE[pk]}">${PUSH_LABEL[pk]}</div>
     <div class="chips">${modes}</div>
