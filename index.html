@@ -368,26 +368,35 @@ function buildProxyGeom(o){
   return new THREE.BoxGeometry(D[0]*CM, D[1]*CM, D[2]*CM);
 }
 
-// flatten a loaded obj/gltf scene into one non-indexed geometry (sim frame, meters -> scene units)
+// flatten a loaded obj/gltf scene into one non-indexed geometry (sim frame,
+// meters -> scene units), keeping UVs and the first texture map so YCB scans
+// can render with their real appearance
+function _concat(arrays, itemSize){
+  const total = arrays.reduce((n, a) => n + a.length, 0);
+  const out = new Float32Array(total);   // spreading 100k+ floats into push() overflows the stack
+  let off = 0;
+  for (const a of arrays){ out.set(a, off); off += a.length; }
+  return new THREE.BufferAttribute(out, itemSize);
+}
+
 function mergeSceneGeoms(root){
   root.updateMatrixWorld(true);
-  const arrays = [];
+  const positions = [], uvs = [];
+  let map = null, allHaveUv = true;
   root.traverse(ch => {
     if (!ch.isMesh) return;
     const g = ch.geometry.index ? ch.geometry.toNonIndexed() : ch.geometry.clone();
     g.applyMatrix4(ch.matrixWorld);
-    arrays.push(g.attributes.position.array);
+    positions.push(g.attributes.position.array);
+    if (g.attributes.uv) uvs.push(g.attributes.uv.array); else allHaveUv = false;
+    if (!map && ch.material && ch.material.map) map = ch.material.map;
   });
-  // typed-array concat: spreading 100k+ floats into push() overflows the stack
-  const total = arrays.reduce((n, a) => n + a.length, 0);
-  const pos = new Float32Array(total);
-  let off = 0;
-  for (const a of arrays){ pos.set(a, off); off += a.length; }
   const bg = new THREE.BufferGeometry();
-  bg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  bg.setAttribute('position', _concat(positions, 3));
+  if (map && allHaveUv && uvs.length) bg.setAttribute('uv', _concat(uvs, 2));
   bg.scale(M, M, M);
   bg.computeVertexNormals();
-  return bg;
+  return {geom: bg, map: (allHaveUv && uvs.length) ? map : null};
 }
 
 // NOTE: the preview mesh must be in the same frame as the mesh used by
@@ -398,22 +407,29 @@ async function loadPreviewMesh(it){
   const url = it.o.base_dir + rel;
   const ext = url.split('.').pop().toLowerCase();
   try {
-    let geom;
+    let merged;
     if (ext === 'obj'){
       const {OBJLoader} = await import('three/addons/loaders/OBJLoader.js');
-      geom = mergeSceneGeoms(await new OBJLoader().loadAsync(url));
+      merged = mergeSceneGeoms(await new OBJLoader().loadAsync(url));
     } else if (ext === 'glb' || ext === 'gltf'){
       const {GLTFLoader} = await import('three/addons/loaders/GLTFLoader.js');
-      geom = mergeSceneGeoms((await new GLTFLoader().loadAsync(url)).scene);
+      merged = mergeSceneGeoms((await new GLTFLoader().loadAsync(url)).scene);
     } else {
       console.warn(`${it.o.id}: unsupported preview_mesh type .${ext}`);
       return;
     }
     it.mesh.geometry.dispose();
-    it.mesh.geometry = geom;
+    it.mesh.geometry = merged.geom;
+    if (merged.map){
+      merged.map.colorSpace = THREE.SRGBColorSpace;
+      it.mesh.material.map = merged.map;
+      it.mesh.material.needsUpdate = true;
+      it.textured = true;
+    }
     it.mesh.material.transparent = false;
     it.mesh.material.opacity = 1;
     it.proxy = false;
+    applyColors(); // textured items render natural (white) in group mode
     applyPose(it, it.pose); // re-seat on the ground with the real bbox, re-place label
     if (selected === it){ setOutline(it); buildGhosts(it); }
   } catch (e) {
@@ -575,19 +591,29 @@ function layout(){
 }
 
 let camTarget = new THREE.Vector3(0,1,6);
+let firstFit = true;
 function frameLayout(placed){
   if(!placed.length) return;
   let minX=1e9,maxX=-1e9,minZ=1e9,maxZ=-1e9;
   for(const p of placed){minX=Math.min(minX,p.x);maxX=Math.max(maxX,p.x);
     minZ=Math.min(minZ,p.z);maxZ=Math.max(maxZ,p.z);}
   camTarget.set((minX+maxX)/2, 1, (minZ+maxZ)/2);
+  if(firstFit){
+    // open with a bird's-eye view fitted to the whole grid
+    const span = Math.max(maxX-minX, maxZ-minZ) + 8;
+    rad = Math.min(110, Math.max(18, span * 1.05));
+    pol = 0.55;
+    firstFit = false;
+  }
 }
 
 function applyColors(){
   for(const it of items){
     if(!it.holder.visible) continue;
     const o=it.o; let col;
-    if(state.color==='group') col = new THREE.Color(GROUP_COL[it.group]);
+    // a texture map multiplies material.color, so white = natural appearance;
+    // grasp/push/aspect modes tint the texture instead of hiding it
+    if(state.color==='group') col = new THREE.Color(it.textured ? 0xffffff : GROUP_COL[it.group]);
     else if(state.color==='grasp') col = new THREE.Color(isGraspable(o)?0x4fd6b8:0xff6b6b);
     else if(state.color==='push') col = new THREE.Color(PUSH_COL[pushKey(pushFeas(o))]);
     else col = aspectColor(o.aspect_ratio ?? 1);
@@ -631,7 +657,7 @@ addEventListener('pointermove',e=>{
   pol=Math.max(0.15,Math.min(1.45,pol)); px=e.clientX;py=e.clientY;
 });
 canvas.addEventListener('wheel',e=>{e.preventDefault();
-  rad*=(1+Math.sign(e.deltaY)*0.08); rad=Math.max(6,Math.min(70,rad));},{passive:false});
+  rad*=(1+Math.sign(e.deltaY)*0.08); rad=Math.max(6,Math.min(120,rad));},{passive:false});
 
 // ---------------------------------------------------------------------------
 // hover picking + click selection
