@@ -7,8 +7,8 @@
 <style>
   :root{
     --bg:#0e1216; --panel:#161c22; --line:#263039; --ink:#e8eef2;
-    --dim:#8fa0ad; --accent:#4fd6b8; --accent2:#ffb454; --pick:#4fd6b8; --nopick:#ff6b6b;
-    --grid:#1c242c;
+    --dim:#8fa0ad; --accent:#4fd6b8; --accent2:#ffb454; --yes:#4fd6b8; --no:#ff6b6b;
+    --hpush:#6aa9ff; --grid:#1c242c;
     --mono:"SFMono-Regular",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box}
@@ -17,7 +17,7 @@
   #app{display:flex;height:100vh;overflow:hidden}
 
   /* ---- left control rail ---- */
-  #rail{width:250px;flex:0 0 250px;background:var(--panel);border-right:1px solid var(--line);
+  #rail{width:300px;flex:0 0 300px;background:var(--panel);border-right:1px solid var(--line);
     padding:18px 16px;display:flex;flex-direction:column;gap:20px;overflow-y:auto}
   .brand{line-height:1.15}
   .brand b{font-size:15px;letter-spacing:.5px}
@@ -28,12 +28,13 @@
   .seg button{flex:1 1 auto;background:transparent;border:1px solid var(--line);color:var(--dim);
     font-family:var(--mono);font-size:11px;padding:6px 8px;border-radius:5px;cursor:pointer;white-space:nowrap}
   .seg button.on{background:var(--accent);border-color:var(--accent);color:#04120e;font-weight:600}
-  .seg button:hover:not(.on){border-color:var(--accent);color:var(--ink)}
+  .seg button:hover:not(.on):not(:disabled){border-color:var(--accent);color:var(--ink)}
+  .seg button:disabled{opacity:.35;cursor:not-allowed}
   label.row{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--dim);cursor:pointer}
   label.row input{accent-color:var(--accent)}
   .legend{display:flex;flex-direction:column;gap:6px;font-size:11px;color:var(--dim)}
   .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:7px;vertical-align:middle}
-  .count{font-size:11px;color:var(--dim);margin-top:auto;border-top:1px solid var(--line);padding-top:12px}
+  .count{font-size:11px;color:var(--dim);margin-top:auto;border-top:1px solid var(--line);padding-top:12px;line-height:1.6}
   .count b{color:var(--accent)}
 
   /* ---- stage ---- */
@@ -41,12 +42,19 @@
   #cv{display:block;width:100%;height:100%}
   .hint{position:absolute;left:16px;bottom:14px;font-size:11px;color:var(--dim);
     background:rgba(14,18,22,.7);padding:6px 10px;border-radius:6px;border:1px solid var(--line)}
+  #tip{position:absolute;left:16px;top:14px;width:350px;font-size:11px;line-height:1.55;
+    color:var(--ink);background:rgba(14,18,22,.85);padding:9px 12px;border-radius:6px;
+    border:1px solid var(--accent);transition:opacity .4s}
+  #tip b{color:var(--accent)}
+  #tip.gone{opacity:0;pointer-events:none}
 
   /* ---- hover / detail card ---- */
-  #card{position:absolute;top:14px;right:14px;width:250px;background:var(--panel);
-    border:1px solid var(--line);border-radius:10px;padding:14px 15px;font-size:11px;
+  #card{position:absolute;top:14px;right:14px;width:270px;max-height:calc(100vh - 28px);overflow-y:auto;
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 15px;font-size:11px;
     display:none;box-shadow:0 12px 40px rgba(0,0,0,.5)}
-  #card h3{margin:0 0 3px;font-size:13px;color:var(--ink)}
+  #card.pinned{border-color:var(--accent)}
+  #card h3{margin:0 0 3px;font-size:13px;color:var(--ink);display:flex;justify-content:space-between;align-items:baseline}
+  #card h3 small{font-size:9.5px;color:var(--dim);font-weight:400}
   #card .type{color:var(--accent2);font-size:10px;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px}
   #card table{width:100%;border-collapse:collapse}
   #card td{padding:3px 0;color:var(--dim);vertical-align:top}
@@ -56,9 +64,25 @@
   .chip{font-size:9.5px;padding:2px 6px;border-radius:4px;background:#1e2731;color:var(--dim);border:1px solid var(--line)}
   .chip.mode{background:#132a25;color:var(--accent);border-color:#1f4a40}
   .chip.tag{background:#2a2013;color:var(--accent2);border-color:#4a3a1f}
-  .pick-badge{margin-top:10px;font-size:10px;padding:4px 8px;border-radius:5px;text-align:center;font-weight:600}
-  .pick-badge.yes{background:#123028;color:var(--pick)}
-  .pick-badge.no{background:#301616;color:var(--nopick)}
+  .badge{margin-top:8px;font-size:10px;padding:4px 8px;border-radius:5px;text-align:center;font-weight:600}
+  .badge.yes{background:#123028;color:var(--yes)}
+  .badge.no{background:#301616;color:var(--no)}
+  .badge.h{background:#14243a;color:var(--hpush)}
+  .badge.v{background:#2e2412;color:var(--accent2)}
+  .badge.unk{background:#1e2731;color:var(--dim)}
+
+  /* ---- rest pose list (pinned card only) ---- */
+  .poses{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+  .poses h5{margin:0 0 6px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);font-weight:600}
+  .pose{display:grid;grid-template-columns:18px 48px 1fr 34px;gap:6px;align-items:center;
+    padding:4px 6px;border-radius:5px;cursor:default;color:var(--dim);position:relative;overflow:hidden}
+  .pose::before{content:"";position:absolute;left:0;top:0;bottom:0;width:var(--p);background:#1b2a30;z-index:0}
+  .pose>*{position:relative;z-index:1}
+  .pose:hover{outline:1px solid var(--line)}
+  .pose .pi{color:#6f8494}
+  .pose .pp{color:var(--ink)}
+  .pose .ph{text-align:right;font-size:10px}
+  .pose .ph.h{color:var(--hpush)} .pose .ph.v{color:var(--accent2)} .pose .ph.hv{color:var(--yes)} .pose .ph.none{color:var(--no)}
 
   /* ---- load error ---- */
   #loaderr{display:none;padding:40px;font-family:var(--mono);color:var(--ink);
@@ -73,13 +97,23 @@
   folder over http and open the page from there:<br><br>
   &nbsp;&nbsp;<b>python -m http.server 8000</b><br>
   &nbsp;&nbsp;→ http://localhost:8000/primcontact_viewer.html<br><br>
-  Keep primcontact_v1.json in the same directory as this file.
+  Expected layout next to this file: <b>prim/primcontact_v1.json</b> (required),
+  <b>ycb/ycb_v1.json</b> (optional, same schema).
 </div>
 <div id="app">
   <aside id="rail">
     <div class="brand">
       <b>PrimContact-v1</b>
       <span id="brand-sub">loading manifest…</span>
+    </div>
+
+    <div class="grp">
+      <h4>Dataset</h4>
+      <div class="seg" id="f-dataset">
+        <button data-d="all" class="on">all</button>
+        <button data-d="prim">primitive</button>
+        <button data-d="ycb">ycb</button>
+      </div>
     </div>
 
     <div class="grp">
@@ -105,17 +139,19 @@
 
     <div class="grp">
       <h4>Filter</h4>
-      <label class="row"><input type="checkbox" id="f-pick"> pickable only (2F-140)</label>
+      <label class="row"><input type="checkbox" id="f-grasp"> graspable only (2F-140)</label>
+      <label class="row"><input type="checkbox" id="f-hpush"> horizontal push only</label>
       <label class="row"><input type="checkbox" id="f-adv"> adversarial only</label>
       <label class="row"><input type="checkbox" id="f-labels" checked> show id labels</label>
-      <label class="row"><input type="checkbox" id="f-spin"> auto-rotate items</label>
+      <label class="row"><input type="checkbox" id="f-spin" checked> auto-rotate items</label>
     </div>
 
     <div class="grp">
       <h4>Colour</h4>
       <div class="seg" id="f-color">
         <button data-c="group" class="on">by group</button>
-        <button data-c="pick">pickable</button>
+        <button data-c="grasp">graspable</button>
+        <button data-c="push">push</button>
         <button data-c="aspect">aspect</button>
       </div>
     </div>
@@ -127,46 +163,92 @@
 
   <main id="stage">
     <canvas id="cv"></canvas>
-    <div class="hint">drag = orbit · scroll = zoom · hover an object for specs</div>
+    <div id="tip"><b>Click any object</b> to inspect its rest-pose set.
+      Every stable pose settles on a shelf above it, labelled with its settle probability.</div>
+    <div class="hint">drag = orbit · scroll = zoom · hover = specs · click = pose set beside object · esc = release</div>
     <div id="card"></div>
   </main>
 </div>
 
 <script type="importmap">
 { "imports": {
-  "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.min.js"
+  "three": "https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.module.min.js",
+  "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
 }}
 </script>
 <script type="module">
 import * as THREE from 'three';
 
 // ---------------------------------------------------------------------------
-// manifest is loaded from the external JSON next to this file
-// (top-level await is valid inside a module script)
+// manifests: prim is required, ycb is optional and shares the same schema.
+// Each object is tagged with its dataset and the directory of its manifest so
+// relative asset paths (preview meshes) resolve per dataset.
 // ---------------------------------------------------------------------------
-let MANIFEST;
-try {
-  const res = await fetch('./prim/primcontact_v1.json');
+const PRIM_MANIFEST = './prim/primcontact_v1.json';
+const YCB_MANIFEST  = './ycb/ycb_v1.json';
+
+async function loadManifest(path, dataset){
+  const res = await fetch(path);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  MANIFEST = await res.json();
+  const m = await res.json();
+  const baseDir = path.slice(0, path.lastIndexOf('/') + 1);
+  for (const o of m.objects){ o.dataset = dataset; o.base_dir = baseDir; }
+  return m;
+}
+
+let PRIM, YCB = null;
+try {
+  PRIM = await loadManifest(PRIM_MANIFEST, 'prim');
 } catch (e) {
   document.getElementById('app').style.display = 'none';
   document.getElementById('loaderr').style.display = 'block';
   throw e;
 }
+try {
+  YCB = await loadManifest(YCB_MANIFEST, 'ycb');
+} catch (e) {
+  console.warn(`ycb manifest not loaded (${e.message}); showing primitives only`);
+  document.querySelector('#f-dataset button[data-d="ycb"]').disabled = true;
+}
 
-const OBJS = MANIFEST.objects;
-const SIMD = MANIFEST.sim_defaults || {};
+const OBJS = [...PRIM.objects, ...(YCB ? YCB.objects : [])];
+const SIMD = PRIM.sim_defaults || {};
 document.getElementById('brand-sub').textContent =
-  `${OBJS.length} primitives · push / pick / place · μ=${SIMD.friction}`;
+  `${PRIM.objects.length} prim` + (YCB ? ` + ${YCB.objects.length} ycb` : '') +
+  ` · push / pick / place · μ=${SIMD.friction}`;
+
+// ---- per-object field helpers ----
+// `graspable` is the canonical field; `pickable` is accepted for older manifests.
+const isGraspable = o => o.graspable ?? o.pickable ?? false;
+
+// Push feasibility is computed offline (gripper offset vs. table collision) and
+// stored as {horizontal, vertical}. It is pose-dependent -- a flat disk may be
+// too low for a horizontal push when lying, fine when on its rim -- so a
+// per-rest-pose entry is also accepted; the object-level flag wins when
+// present, otherwise poses are OR-ed. Missing everywhere -> "not evaluated".
+function pushFeas(src){
+  let f = src.push_feasibility;
+  if (!f && src.rest_poses){
+    const pf = src.rest_poses.map(p => p.push_feasibility).filter(Boolean);
+    if (pf.length) f = { horizontal: pf.some(p => p.horizontal), vertical: pf.some(p => p.vertical) };
+  }
+  if (!f) return { known:false, h:false, v:false };
+  return { known:true, h:!!f.horizontal, v:!!f.vertical };
+}
+const pushKey = f => !f.known ? 'unk' : (f.h && f.v) ? 'hv' : f.h ? 'h' : f.v ? 'v' : 'none';
+const PUSH_COL   = { hv:0x4fd6b8, h:0x6aa9ff, v:0xffb454, none:0xff6b6b, unk:0x5a6a75 };
+const PUSH_LABEL = { hv:'PUSH · H + V', h:'PUSH · H only', v:'PUSH · V only', none:'PUSH · none', unk:'PUSH · not evaluated' };
+const PUSH_BADGE = { hv:'yes', h:'h', v:'v', none:'no', unk:'unk' };
 
 // group key helper
 const groupOf = o =>
-  (o.type === 'cube' || o.type === 'cylinder' || o.type === 'cuboid') ? o.type : 'poly';
+  o.dataset === 'ycb' ? 'ycb'
+  : (o.type === 'cube' || o.type === 'cylinder' || o.type === 'cuboid') ? o.type : 'poly';
 
-const GROUP_ORDER = ['cube','cylinder','cuboid','poly'];
-const GROUP_COL = { cube:0x6aa9ff, cylinder:0xffb454, cuboid:0x4fd6b8, poly:0xc792ea };
+const GROUP_ORDER = ['cube','cylinder','cuboid','poly','ycb'];
+const GROUP_COL = { cube:0x6aa9ff, cylinder:0xffb454, cuboid:0x4fd6b8, poly:0xc792ea, ycb:0xff8fb1 };
 const CM = 0.1; // scene units: 1 unit = 10 cm, so cm * 0.1 -> keeps grid readable
+const M  = 10;  // meters -> scene units (spawn_z, preview meshes are in meters)
 
 // ---- renderer / scene ----
 const canvas = document.getElementById('cv');
@@ -203,105 +285,169 @@ scene.add(ground);
 const grid = new THREE.GridHelper(200, 200, 0x1c242c, 0x1c242c);
 grid.position.y = 0.001; scene.add(grid);
 
-// ---- geometry factory (true-scale, sitting on ground) ----
-function buildGeom(o){
-  const t = o.type;
-  let g, height;
-  if (t === 'cylinder'){
-    const d = o.dims_cm.diameter, h = o.dims_cm.height;
-    g = new THREE.CylinderGeometry(d/2*CM, d/2*CM, h*CM, 48);
-    height = h*CM;
-  } else if (t === 'cube' || t === 'cuboid'){
-    const [x,y,z] = o.dims_cm;
-    // orient so the tallest dim is up -> "standing" pose to show topple potential
-    const dims = [x,y,z].sort((a,b)=>a-b); // small,mid,large
-    const H = dims[2], A = dims[0], B = dims[1];
-    g = new THREE.BoxGeometry(A*CM, H*CM, B*CM);
-    height = H*CM;
-  } else if (t === 'tri_prism'){
-    const [a,,l] = o.dims_cm;
-    const s = a*CM;
-    const tri = new THREE.Shape();
-    tri.moveTo(-s/2,-s/2); tri.lineTo(s/2,-s/2); tri.lineTo(0,s/2); tri.closePath();
-    g = new THREE.ExtrudeGeometry(tri, {depth:l*CM, bevelEnabled:false});
-    g.rotateX(-Math.PI/2); g.center();
-    height = s;
-  } else if (t === 'hex_prism'){
-    const af = o.dims_cm[0], h = o.dims_cm[2];
-    g = new THREE.CylinderGeometry(af/2*CM, af/2*CM, h*CM, 6);
-    height = h*CM;
-  } else if (t === 'pyramid'){
-    const base = o.dims_cm[0], h = o.dims_cm[2];
-    g = new THREE.ConeGeometry(base/2*CM, h*CM, 4);
-    height = h*CM;
-  } else if (t === 'cone'){
-    const base = o.dims_cm[0], h = o.dims_cm[2];
-    g = new THREE.ConeGeometry(base/2*CM, h*CM, 40);
-    height = h*CM;
-  } else if (t === 'tetra'){
-    const s = o.dims_cm[0]*CM;
-    g = new THREE.TetrahedronGeometry(s*0.7);
-    height = s;
-  } else if (t === 'l_block'){
-    // build an L from two boxes, merged into one geometry
-    const [x,y,z] = o.dims_cm;
-    const b1 = new THREE.BoxGeometry(x*CM, z*CM, y*0.4*CM);
-    const b2 = new THREE.BoxGeometry(x*0.4*CM, z*CM, y*CM);
-    b1.translate(0,0, -y*0.3*CM);
-    b2.translate(-x*0.3*CM,0, 0);
-    g = mergeGeoms([b1,b2]); height = z*CM;
-  } else {
-    g = new THREE.BoxGeometry(1,1,1); height=1;
-  }
-  g.computeVertexNormals();
-  // sit on ground: shift so min y = 0
-  g.computeBoundingBox();
-  const minY = g.boundingBox.min.y;
-  g.translate(0, -minY, 0);
+// ---------------------------------------------------------------------------
+// geometry factory -- built in the SIM frame (Z-up), matching
+// build_prim_objects.py::build_primitive_mesh exactly, so that the rest-pose
+// quaternions / spawn_z from the manifest can be applied verbatim. Each mesh
+// lives under a holder group with rotation.x = -pi/2 (sim Z-up -> three Y-up).
+// ---------------------------------------------------------------------------
+function extrudeZ(pts, depth){
+  // polygon in sim xy, extruded along +z, then centred (== trimesh extrude_polygon + translate)
+  const sh = new THREE.Shape();
+  sh.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 1; i < pts.length; i++) sh.lineTo(pts[i][0], pts[i][1]);
+  sh.closePath();
+  const g = new THREE.ExtrudeGeometry(sh, {depth, bevelEnabled:false});
+  g.translate(0, 0, -depth/2);
   return g;
 }
 
-// minimal geometry merge (positions+normals) to avoid extra deps
-function mergeGeoms(list){
-  let pos=[], nor=[];
-  for(const geo of list){
-    const p = geo.attributes.position.array;
-    geo.computeVertexNormals();
-    const n = geo.attributes.normal.array;
-    if(geo.index){
-      const idx = geo.index.array;
-      for(let i=0;i<idx.length;i++){
-        const k=idx[i]*3;
-        pos.push(p[k],p[k+1],p[k+2]); nor.push(n[k],n[k+1],n[k+2]);
-      }
-    } else {
-      for(let i=0;i<p.length;i++){pos.push(p[i]);}
-      for(let i=0;i<n.length;i++){nor.push(n[i]);}
-    }
+function tetraGeom(s){
+  // trimesh definition: vertices (+-1,+-1,+-1) subset, scaled so the longest
+  // bbox extent equals s -> vertices at +-s/2; bbox centroid is already 0
+  const h = s/2;
+  const V = [[h,h,h],[h,-h,-h],[-h,h,-h],[-h,-h,h]];
+  const F = [[0,1,2],[0,3,1],[0,2,3],[1,3,2]];
+  const pos = [];
+  for (const f of F) for (const i of f) pos.push(...V[i]);
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  return g;
+}
+
+function buildPrimGeom(o){
+  const t = o.type, D = o.dims_cm;
+  let g;
+  if (t === 'cube' || t === 'cuboid'){
+    g = new THREE.BoxGeometry(D[0]*CM, D[1]*CM, D[2]*CM);
+  } else if (t === 'cylinder'){
+    const r = D.diameter/2*CM;
+    g = new THREE.CylinderGeometry(r, r, D.height*CM, 48);
+    g.rotateX(Math.PI/2); // axis Y -> Z
+  } else if (t === 'hex_prism'){
+    // dims = [across_flats, across_flats, height]; trimesh takes the circumradius
+    const r = (D[0]/2)/Math.cos(Math.PI/6)*CM;
+    // thetaStart = pi/2 puts a vertex on sim +x like trimesh, so facet-down
+    // rest poses land on a facet rather than an edge
+    g = new THREE.CylinderGeometry(r, r, D[2]*CM, 6, 1, false, Math.PI/2);
+    g.rotateX(Math.PI/2);
+  } else if (t === 'pyramid'){
+    // square base of side `base` -> circumradius base/sqrt(2), apex on +z
+    g = new THREE.ConeGeometry(D[0]/Math.SQRT2*CM, D[2]*CM, 4, 1, false, Math.PI/2);
+    g.rotateX(Math.PI/2);
+  } else if (t === 'cone'){
+    g = new THREE.ConeGeometry(D[0]/2*CM, D[2]*CM, 48);
+    g.rotateX(Math.PI/2);
+  } else if (t === 'tri_prism'){
+    // dims = [triangle_size, triangle_size, prism_length]
+    const a = D[0]*CM, L = D[2]*CM;
+    g = extrudeZ([[-a/2,-a/2],[a/2,-a/2],[0,a/2]], L);
+  } else if (t === 'l_block'){
+    // L footprint, NOT recentred in xy: the CoM offset is what makes it adversarial
+    const [x,y,z] = D.map(v => v*CM);
+    g = extrudeZ([
+      [-x/2,-y/2], [x/2,-y/2], [x/2,-y/2+0.4*y],
+      [-x/2+0.4*x,-y/2+0.4*y], [-x/2+0.4*x,y/2], [-x/2,y/2],
+    ], z);
+  } else if (t === 'tetra'){
+    g = tetraGeom(D[0]*CM);
+  } else {
+    g = new THREE.BoxGeometry(1,1,1);
   }
+  g.computeVertexNormals();
+  return g;
+}
+
+function buildProxyGeom(o){
+  // bounding-box stand-in for assets we cannot render (USD); replaced by the
+  // preview mesh if the manifest provides one
+  const D = o.bbox_cm || (Array.isArray(o.dims_cm) ? o.dims_cm
+          : [o.longest_cm || 8, o.longest_cm || 8, o.shortest_cm || 8]);
+  return new THREE.BoxGeometry(D[0]*CM, D[1]*CM, D[2]*CM);
+}
+
+// flatten a loaded obj/gltf scene into one non-indexed geometry (sim frame, meters -> scene units)
+function mergeSceneGeoms(root){
+  root.updateMatrixWorld(true);
+  const pos = [];
+  root.traverse(ch => {
+    if (!ch.isMesh) return;
+    const g = ch.geometry.index ? ch.geometry.toNonIndexed() : ch.geometry.clone();
+    g.applyMatrix4(ch.matrixWorld);
+    pos.push(...g.attributes.position.array);
+  });
   const bg = new THREE.BufferGeometry();
-  bg.setAttribute('position', new THREE.Float32BufferAttribute(pos,3));
-  bg.setAttribute('normal', new THREE.Float32BufferAttribute(nor,3));
+  bg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  bg.scale(M, M, M);
+  bg.computeVertexNormals();
   return bg;
 }
 
-// aspect -> colour ramp (teal low -> amber high)
-function aspectColor(ar){
-  const t = Math.min(1, Math.max(0, (ar-0.25)/(3-0.25)));
-  const c1 = new THREE.Color(0x4fd6b8), c2 = new THREE.Color(0xff6b6b);
-  return c1.clone().lerp(c2, t);
+// NOTE: the preview mesh must be in the same frame as the mesh used by
+// compute_rest_poses.py, otherwise the rest poses will look wrong here.
+async function loadPreviewMesh(it){
+  const rel = it.o.sim?.preview_mesh;
+  if (!rel) return;
+  const url = it.o.base_dir + rel;
+  const ext = url.split('.').pop().toLowerCase();
+  try {
+    let geom;
+    if (ext === 'obj'){
+      const {OBJLoader} = await import('three/addons/loaders/OBJLoader.js');
+      geom = mergeSceneGeoms(await new OBJLoader().loadAsync(url));
+    } else if (ext === 'glb' || ext === 'gltf'){
+      const {GLTFLoader} = await import('three/addons/loaders/GLTFLoader.js');
+      geom = mergeSceneGeoms((await new GLTFLoader().loadAsync(url)).scene);
+    } else {
+      console.warn(`${it.o.id}: unsupported preview_mesh type .${ext}`);
+      return;
+    }
+    it.mesh.geometry.dispose();
+    it.mesh.geometry = geom;
+    it.mesh.material.transparent = false;
+    it.mesh.material.opacity = 1;
+    it.proxy = false;
+    applyPose(it, it.pose); // re-seat on the ground with the real bbox, re-place label
+    if (selected === it){ setOutline(it); buildGhosts(it); }
+  } catch (e) {
+    console.warn(`${it.o.id}: preview mesh load failed (${e.message}); keeping bbox proxy`);
+  }
 }
 
 // ---- build meshes ----
-const items = []; // {o, mesh, group, label}
-for(const o of OBJS){
-  const geom = buildGeom(o);
-  const mat = new THREE.MeshStandardMaterial({roughness:.55, metalness:.05});
+const items = []; // {o, holder, mesh, group, dataset, label, pose, proxy}
+for (const o of OBJS){
+  const proxy = o.dataset !== 'prim';
+  const geom = proxy ? buildProxyGeom(o) : buildPrimGeom(o);
+  const mat = new THREE.MeshStandardMaterial({roughness:.55, metalness:.05,
+    transparent:proxy, opacity:proxy ? .55 : 1});
   const mesh = new THREE.Mesh(geom, mat);
   mesh.castShadow = true; mesh.receiveShadow = false;
-  mesh.userData.o = o;
-  scene.add(mesh);
-  items.push({o, mesh, group:groupOf(o)});
+  const holder = new THREE.Group();
+  holder.rotation.x = -Math.PI/2; // sim Z-up -> three Y-up
+  holder.add(mesh);
+  scene.add(holder);
+  const it = {o, holder, mesh, group:groupOf(o), dataset:o.dataset, pose:null, proxy};
+  mesh.userData.it = it;
+  items.push(it);
+}
+
+// ---- rest poses ----
+function applyPose(it, pose){
+  it.pose = pose;
+  if (pose){
+    const [w,x,y,z] = pose.quat_wxyz;
+    it.mesh.quaternion.set(x, y, z, w);
+    it.mesh.position.set(0, 0, pose.spawn_z*M);
+  } else {
+    // display pose: identity in the sim frame (cylinders/prisms upright,
+    // boxes tallest-dim up since z is the largest dim in the tables),
+    // lowest vertex on the ground -- the original standing presentation
+    it.mesh.quaternion.identity();
+    it.mesh.geometry.computeBoundingBox();
+    it.mesh.position.set(0, 0, -it.mesh.geometry.boundingBox.min.z);
+  }
+  placeLabel(it);
 }
 
 // ---- label sprites ----
@@ -314,12 +460,23 @@ function makeLabel(text){
   ctx.fillText(text, s/2, 34);
   const tex = new THREE.CanvasTexture(c); tex.anisotropy=4;
   const spr = new THREE.Sprite(new THREE.SpriteMaterial({map:tex, transparent:true, depthTest:false}));
-  spr.scale.set(2.6,0.65,1);
+  spr.scale.set(2.0,0.5,1);
   return spr;
 }
-for(const it of items){
+// label sits just above the posed object's world bbox, on its own footprint
+// (declared before the init loop below: applyPose -> placeLabel runs there)
+const _box = new THREE.Box3();
+function placeLabel(it){
+  it.holder.updateMatrixWorld(true);
+  _box.setFromObject(it.holder, true);
+  it.label.position.set(it.holder.position.x, _box.max.y + 0.22, it.holder.position.z);
+}
+
+for (const it of items){
   it.label = makeLabel(it.o.id);
   scene.add(it.label);
+  applyPose(it, null); // display pose; rest poses appear beside on selection
+  if (it.proxy) loadPreviewMesh(it);
 }
 
 // group divider labels (floating headers)
@@ -340,33 +497,34 @@ for(const g of GROUP_ORDER) headerSprites[g]=makeHeader(g);
 // ---------------------------------------------------------------------------
 // LAYOUT: grid, grouped in row-bands, aligned columns
 // ---------------------------------------------------------------------------
-const state = {group:'all', sort:'default', pickOnly:false, advOnly:false,
-               labels:true, spin:false, color:'group'};
+const state = {dataset:'all', group:'all', sort:'default', graspOnly:false, hpushOnly:false,
+               advOnly:false, labels:true, spin:true, color:'group'};
 const SPACING = 3.4;      // cell size in scene units
 const COLS = 8;           // columns per band
 
 function visibleItems(){
-  let list = items.filter(it=>{
+  return items.filter(it=>{
+    if(state.dataset!=='all' && it.dataset!==state.dataset) return false;
     if(state.group!=='all' && it.group!==state.group) return false;
-    if(state.pickOnly && !it.o.pickable) return false;
+    if(state.graspOnly && !isGraspable(it.o)) return false;
+    if(state.hpushOnly && !pushFeas(it.o).h) return false;
     if(state.advOnly && !(it.o.tags||[]).includes('adversarial')) return false;
     return true;
   });
-  return list;
 }
 
 function sortKey(it){
   const o=it.o;
-  if(state.sort==='longest') return o.longest_cm;
+  if(state.sort==='longest') return o.longest_cm ?? 0;
   if(state.sort==='aspect')  return o.aspect_ratio ?? 1;
-  if(state.sort==='poses')   return o.stable_poses;
+  if(state.sort==='poses')   return o.stable_poses ?? (o.rest_poses||[]).length;
   return 0;
 }
 
 function layout(){
   const list = visibleItems();
   // hide everything first
-  for(const it of items){ it.mesh.visible=false; it.label.visible=false; }
+  for(const it of items){ it.holder.visible=false; it.label.visible=false; }
   for(const g of GROUP_ORDER) headerSprites[g].visible=false;
 
   // organise into bands by group (respect GROUP_ORDER), unless a single group selected
@@ -390,16 +548,21 @@ function layout(){
       const x = (col - (COLS-1)/2) * SPACING;
       const z = r * SPACING;
       const it = band[i];
-      it.mesh.visible=true;
-      it.mesh.position.set(x, 0, z);
+      it.holder.visible=true;
+      it.holder.position.set(x, 0, z);
       it.label.visible = state.labels;
-      it.label.position.set(x, 3.05, z-1.35);
+      placeLabel(it);
       placed.push({it,x,z});
     }
     row += Math.ceil(band.length/COLS) + 1; // +1 blank row between bands
   }
 
   applyColors();
+  // selection follows the layout: drop it if filtered out, else re-anchor ghosts
+  if(selected){
+    if(!selected.holder.visible) select(null);
+    else placeGhosts(selected);
+  }
   // recentre camera target on the placed cloud
   frameLayout(placed);
 }
@@ -415,10 +578,11 @@ function frameLayout(placed){
 
 function applyColors(){
   for(const it of items){
-    if(!it.mesh.visible) continue;
+    if(!it.holder.visible) continue;
     const o=it.o; let col;
     if(state.color==='group') col = new THREE.Color(GROUP_COL[it.group]);
-    else if(state.color==='pick') col = new THREE.Color(o.pickable?0x4fd6b8:0xff6b6b);
+    else if(state.color==='grasp') col = new THREE.Color(isGraspable(o)?0x4fd6b8:0xff6b6b);
+    else if(state.color==='push') col = new THREE.Color(PUSH_COL[pushKey(pushFeas(o))]);
     else col = aspectColor(o.aspect_ratio ?? 1);
     it.mesh.material.color.copy(col);
     if((o.tags||[]).includes('adversarial')){
@@ -430,6 +594,13 @@ function applyColors(){
   }
 }
 
+// aspect -> colour ramp (teal low -> red high)
+function aspectColor(ar){
+  const t = Math.min(1, Math.max(0, (ar-0.25)/(3-0.25)));
+  const c1 = new THREE.Color(0x4fd6b8), c2 = new THREE.Color(0xff6b6b);
+  return c1.clone().lerp(c2, t);
+}
+
 // ---------------------------------------------------------------------------
 // simple orbit controls (no external dep)
 // ---------------------------------------------------------------------------
@@ -438,11 +609,17 @@ let az=Math.atan2(camera.position.x,camera.position.z), pol=0.75, rad=20;
   const v=camera.position.clone().sub(camTarget); rad=v.length();
   pol=Math.acos(v.y/rad); az=Math.atan2(v.x,v.z);
 }
-let dragging=false, px=0, py=0;
-canvas.addEventListener('pointerdown',e=>{dragging=true;px=e.clientX;py=e.clientY;});
-addEventListener('pointerup',()=>dragging=false);
+let dragging=false, px=0, py=0, dragDist=0;
+canvas.addEventListener('pointerdown',e=>{dragging=true;px=e.clientX;py=e.clientY;dragDist=0;});
+addEventListener('pointerup',e=>{
+  if(!dragging) return;
+  dragging=false;
+  // a press that barely moved is a click: pin the hovered object
+  if(dragDist<4 && e.target===canvas) select(hovered);
+});
 addEventListener('pointermove',e=>{
   if(!dragging) return;
+  dragDist += Math.abs(e.clientX-px)+Math.abs(e.clientY-py);
   az -= (e.clientX-px)*0.005; pol -= (e.clientY-py)*0.005;
   pol=Math.max(0.15,Math.min(1.45,pol)); px=e.clientX;py=e.clientY;
 });
@@ -450,49 +627,213 @@ canvas.addEventListener('wheel',e=>{e.preventDefault();
   rad*=(1+Math.sign(e.deltaY)*0.08); rad=Math.max(6,Math.min(70,rad));},{passive:false});
 
 // ---------------------------------------------------------------------------
-// hover picking
+// hover picking + click selection
 // ---------------------------------------------------------------------------
 const ray=new THREE.Raycaster(), mouse=new THREE.Vector2();
 const card=document.getElementById('card');
-let hovered=null;
+let hovered=null, selected=null;
 canvas.addEventListener('pointermove',e=>{
   const r=canvas.getBoundingClientRect();
   mouse.x=((e.clientX-r.left)/r.width)*2-1;
   mouse.y=-((e.clientY-r.top)/r.height)*2+1;
   ray.setFromCamera(mouse,camera);
-  const hits=ray.intersectObjects(items.filter(i=>i.mesh.visible).map(i=>i.mesh));
-  if(hits.length){
-    const o=hits[0].object.userData.o;
-    if(hovered!==o){ hovered=o; showCard(o); }
-  } else if(hovered){ hovered=null; card.style.display='none'; }
+  const hits=ray.intersectObjects(items.filter(i=>i.holder.visible).map(i=>i.mesh));
+  const it = hits.length ? hits[0].object.userData.it : null;
+  if(it!==hovered){
+    hovered=it;
+    if(!selected){ it ? showCard(it,false) : card.style.display='none'; }
+  }
 });
+addEventListener('keydown',e=>{ if(e.key==='Escape') select(null); });
 
-function showCard(o){
-  const dims = o.type==='cylinder'
-    ? `⌀${o.dims_cm.diameter} × h${o.dims_cm.height} cm`
-    : `${o.dims_cm.join(' × ')} cm`;
+// white edge outline on the pinned object; rebuilt on select since the
+// geometry may be swapped later (proxy -> preview mesh)
+let outline=null;
+function setOutline(it){
+  if(outline){ outline.parent.remove(outline); outline.geometry.dispose(); outline=null; }
+  if(!it) return;
+  outline = new THREE.LineSegments(
+    new THREE.EdgesGeometry(it.mesh.geometry, 25),
+    new THREE.LineBasicMaterial({color:0xffffff, transparent:true, opacity:.8}));
+  it.mesh.add(outline);
+}
+
+// ---------------------------------------------------------------------------
+// rest-pose ghosts: on selection the full stable-pose set is laid out on a
+// floating shelf centred above the object (one settled copy per pose,
+// labelled idx · prob), with a dashed guide line down to the object. The
+// elevation keeps the set clear of the grid; everything else is dimmed.
+// ---------------------------------------------------------------------------
+const GHOST_SPACING = 2.6;
+const SHELF_Y = 4.2, SHELF_T = 0.08, SHELF_D = 3.0;
+let ghosts = []; // {holder, mesh, label, idx}
+let shelf = null; // {mesh, edges, guide}
+function clearGhosts(){
+  for(const g of ghosts){
+    scene.remove(g.holder); scene.remove(g.label);
+    g.mesh.material.dispose(); g.label.material.map.dispose(); g.label.material.dispose();
+  }
+  ghosts = [];
+  if(shelf){
+    for(const k of ['mesh','edges','guide']){ scene.remove(shelf[k]); shelf[k].geometry.dispose(); }
+    shelf = null;
+  }
+}
+
+function buildGhosts(it){
+  clearGhosts();
+  const rp = it.o.rest_poses||[];
+  if(!rp.length) return;
+  rp.forEach((p,i)=>{
+    // clone from a NORMALIZED material: the source may still carry the
+    // dimmed opacity of a previous selection
+    const mat = it.mesh.material.clone();
+    mat.opacity = it.proxy ? .55 : 1;
+    mat.transparent = it.proxy;
+    const mesh = new THREE.Mesh(it.mesh.geometry, mat);
+    const [w,x,y,z] = p.quat_wxyz;
+    mesh.quaternion.set(x, y, z, w);
+    mesh.position.set(0, 0, p.spawn_z*M);
+    const holder = new THREE.Group();
+    holder.rotation.x = -Math.PI/2;
+    holder.add(mesh);
+    scene.add(holder);
+    const label = makeLabel(`${i} · ${(p.prob*100).toFixed(0)}%`);
+    label.scale.set(1.7,0.42,1);
+    scene.add(label);
+    ghosts.push({holder, mesh, label, idx:i});
+  });
+  // shelf panel sized to the row, plus a dashed guide down to the object
+  const width = rp.length*GHOST_SPACING + 1.0;
+  const mesh = new THREE.Mesh(
+    new THREE.BoxGeometry(width, SHELF_T, SHELF_D),
+    new THREE.MeshStandardMaterial({color:0x1a222b, roughness:.9, metalness:0,
+      transparent:true, opacity:.9}));
+  const edges = new THREE.LineSegments(
+    new THREE.EdgesGeometry(mesh.geometry),
+    new THREE.LineBasicMaterial({color:0x4fd6b8, transparent:true, opacity:.35}));
+  const guide = new THREE.Line(
+    new THREE.BufferGeometry(),
+    new THREE.LineDashedMaterial({color:0x4fd6b8, dashSize:.18, gapSize:.12,
+      transparent:true, opacity:.6}));
+  scene.add(mesh); scene.add(edges); scene.add(guide);
+  shelf = {mesh, edges, guide};
+  placeGhosts(it);
+}
+
+function placeGhosts(it){
+  if(!shelf) return;
+  const bx = it.holder.position.x, bz = it.holder.position.z;
+  const n = ghosts.length, topY = SHELF_Y + SHELF_T/2;
+  for(const g of ghosts){
+    g.holder.position.set(bx + (g.idx-(n-1)/2)*GHOST_SPACING, topY, bz);
+    g.holder.updateMatrixWorld(true);
+    _box.setFromObject(g.holder, true);
+    g.label.position.set(g.holder.position.x, _box.max.y + 0.2, g.holder.position.z);
+    // ghosts follow the object's current display colour (colour only, not opacity)
+    g.mesh.material.color.copy(it.mesh.material.color);
+  }
+  shelf.mesh.position.set(bx, SHELF_Y, bz);
+  shelf.edges.position.copy(shelf.mesh.position);
+  it.holder.updateMatrixWorld(true);
+  _box.setFromObject(it.holder, true);
+  shelf.guide.geometry.setFromPoints([
+    new THREE.Vector3(bx, _box.max.y + 0.05, bz),
+    new THREE.Vector3(bx, SHELF_Y - SHELF_T/2, bz)]);
+  shelf.guide.computeLineDistances();
+}
+
+function highlightGhost(i, on){
+  const g = ghosts[i]; if(!g) return;
+  g.mesh.material.emissive = new THREE.Color(0x4fd6b8);
+  g.mesh.material.emissiveIntensity = on ? 0.5 : 0;
+}
+
+// fade everything except the selected object and its ghost row
+function setDim(on){
+  for(const it2 of items){
+    const base = it2.proxy ? .55 : 1;
+    const target = (on && it2!==selected) ? 0.12 : base;
+    it2.mesh.castShadow = !(on && it2!==selected);
+    it2.mesh.material.transparent = target < 1;
+    it2.mesh.material.opacity = target;
+    it2.mesh.material.needsUpdate = true;
+    it2.label.material.opacity = (on && it2!==selected) ? 0.12 : 1;
+  }
+}
+
+function select(it){
+  document.getElementById('tip').classList.toggle('gone', !!it);
+  selected = it;
+  setOutline(it);
+  clearGhosts();
+  if(it) buildGhosts(it);
+  setDim(!!it);
+  if(it){
+    // frame the object together with its pose shelf
+    camTarget.set(it.holder.position.x, 2.2, it.holder.position.z);
+    showCard(it,true);
+  } else {
+    layout(); // recentre the camera target on the grid
+    if(hovered) showCard(hovered,false);
+    else card.style.display='none';
+  }
+}
+
+function fmtDims(o){
+  const D=o.dims_cm;
+  if(!D) return o.bbox_cm ? `bbox ${o.bbox_cm.join(' × ')} cm` : '—';
+  return Array.isArray(D) ? `${D.join(' × ')} cm` : `⌀${D.diameter} × h${D.height} cm`;
+}
+
+function poseRow(it, p, i){
+  const f = p.push_feasibility ? pushFeas({push_feasibility:p.push_feasibility}) : null;
+  const k = f ? pushKey(f) : null;
+  const glyph = !f ? '' : k==='hv' ? 'H·V' : k==='h' ? 'H' : k==='v' ? 'V' : '—';
+  const contact = p.rolling ? 'rolling' : `margin ${(p.support_margin*1000).toFixed(0)} mm`;
+  return `<div class="pose" data-i="${i}" style="--p:${(p.prob*100).toFixed(1)}%">
+    <span class="pi">${i}</span><span class="pp">${(p.prob*100).toFixed(1)}%</span>
+    <span>${contact}</span><span class="ph ${k??''}">${glyph}</span></div>`;
+}
+
+function showCard(it, pinned){
+  const o = it.o;
   const modes = (o.modes_expected||[]).map(m=>`<span class="chip mode">${m}</span>`).join('');
   const tags = (o.tags||[]).map(t=>`<span class="chip tag">${t}</span>`).join('');
   const sim = o.sim || {};
+  const pf = pushFeas(o), pk = pushKey(pf);
+  const rp = o.rest_poses || [];
+  const nposes = o.stable_poses ?? rp.length;
+  card.classList.toggle('pinned', pinned);
   card.innerHTML = `
-    <h3>${o.id}</h3>
-    <div class="type">${o.type} · ${o.stable_poses} stable pose${o.stable_poses>1?'s':''}</div>
+    <h3><span>${o.id}</span><small>${pinned ? 'pinned · esc' : o.dataset}</small></h3>
+    <div class="type">${o.type} · ${nposes} stable pose${nposes!==1?'s':''}${it.proxy?' · bbox proxy':''}</div>
     <table>
-      <tr><td class="k">dims</td><td class="v">${dims}</td></tr>
-      <tr><td class="k">longest</td><td class="v">${o.longest_cm} cm</td></tr>
+      <tr><td class="k">dims</td><td class="v">${fmtDims(o)}</td></tr>
+      <tr><td class="k">longest</td><td class="v">${o.longest_cm ?? '—'} cm</td></tr>
       <tr><td class="k">aspect</td><td class="v">${o.aspect_ratio ?? '—'}</td></tr>
       <tr><td class="k">mass</td><td class="v">${sim.mass ?? '—'} kg</td></tr>
       <tr><td class="k">μ ground</td><td class="v">${SIMD.friction ?? '—'}</td></tr>
-      <tr><td class="k">asset</td><td class="v">${sim.object_type ?? '—'}</td></tr>
-      <tr><td class="k">skills</td><td class="v">${o.skills.join(', ')}</td></tr>
+      <tr><td class="k">asset</td><td class="v">${sim.asset_filename ?? sim.object_type ?? '—'}</td></tr>
+      ${o.push_offset_cm!=null ? `<tr><td class="k">push offset</td><td class="v">${o.push_offset_cm} cm</td></tr>` : ''}
+      <tr><td class="k">skills</td><td class="v">${(o.skills||[]).join(', ') || '—'}</td></tr>
     </table>
-    <div class="pick-badge ${o.pickable?'yes':'no'}">
-      ${o.pickable?'PICKABLE · 2F-140':'PUSH / PLACE ONLY'}
+    <div class="badge ${isGraspable(o)?'yes':'no'}">
+      ${isGraspable(o)?'GRASPABLE · 2F-140':'NOT GRASPABLE · push / place only'}
     </div>
+    <div class="badge ${PUSH_BADGE[pk]}">${PUSH_LABEL[pk]}</div>
     <div class="chips">${modes}</div>
     ${tags?`<div class="chips">${tags}</div>`:''}
+    ${pinned && rp.length ? `<div class="poses"><h5>rest poses · shown beside object</h5>
+      ${rp.map((p,i)=>poseRow(it,p,i)).join('')}</div>` : ''}
   `;
   card.style.display='block';
+  if(pinned){
+    card.querySelectorAll('.pose').forEach(el=>{
+      el.addEventListener('mouseenter',()=>highlightGhost(+el.dataset.i, true));
+      el.addEventListener('mouseleave',()=>highlightGhost(+el.dataset.i, false));
+    });
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -508,30 +849,40 @@ function seg(id, key, cast=(v)=>v){
     });
   });
 }
-seg('f-group','group'); seg('f-sort','sort'); seg('f-color','color');
-document.getElementById('f-pick').onchange=e=>{state.pickOnly=e.target.checked;layout();updateCount();};
+seg('f-dataset','dataset'); seg('f-group','group'); seg('f-sort','sort'); seg('f-color','color');
+document.getElementById('f-grasp').onchange=e=>{state.graspOnly=e.target.checked;layout();updateCount();};
+document.getElementById('f-hpush').onchange=e=>{state.hpushOnly=e.target.checked;layout();updateCount();};
 document.getElementById('f-adv').onchange=e=>{state.advOnly=e.target.checked;layout();updateCount();};
 document.getElementById('f-labels').onchange=e=>{state.labels=e.target.checked;layout();};
 document.getElementById('f-spin').onchange=e=>{state.spin=e.target.checked;};
 
 function updateCount(){
-  const n=visibleItems().length;
-  const total=OBJS.length;
-  const pick=OBJS.filter(o=>o.pickable).length;
+  const vis=visibleItems();
+  const n=vis.length;
+  const grasp=vis.filter(it=>isGraspable(it.o)).length;
+  const hpush=vis.filter(it=>pushFeas(it.o).h).length;
+  const unk=vis.filter(it=>!pushFeas(it.o).known).length;
   document.getElementById('count').innerHTML=
-    `showing <b>${n}</b> / ${total} objects<br>pickable in set: <b>${pick}</b>`;
+    `showing <b>${n}</b> / ${OBJS.length} objects<br>graspable: <b>${grasp}</b>` +
+    `<br>horizontal push: <b>${hpush}</b>${unk?` <span style="opacity:.6">(${unk} not evaluated)</span>`:''}`;
 }
 function buildLegend(){
   const L=document.getElementById('legend');
+  const sw=hex=>`<i style="background:#${hex.toString(16).padStart(6,'0')}"></i>`;
   if(state.color==='group'){
-    L.innerHTML = GROUP_ORDER.map(g=>
-      `<div><i style="background:#${GROUP_COL[g].toString(16).padStart(6,'0')}"></i>${g}</div>`).join('');
-  } else if(state.color==='pick'){
-    L.innerHTML = `<div><i style="background:#4fd6b8"></i>pickable</div>
-                   <div><i style="background:#ff6b6b"></i>push/place only</div>`;
+    L.innerHTML = GROUP_ORDER.filter(g=>g!=='ycb'||YCB).map(g=>`<div>${sw(GROUP_COL[g])}${g}</div>`).join('');
+  } else if(state.color==='grasp'){
+    L.innerHTML = `<div>${sw(0x4fd6b8)}graspable</div>
+                   <div>${sw(0xff6b6b)}push/place only</div>`;
+  } else if(state.color==='push'){
+    L.innerHTML = `<div>${sw(PUSH_COL.hv)}horizontal + vertical</div>
+                   <div>${sw(PUSH_COL.h)}horizontal only</div>
+                   <div>${sw(PUSH_COL.v)}vertical only</div>
+                   <div>${sw(PUSH_COL.none)}neither</div>
+                   <div>${sw(PUSH_COL.unk)}not evaluated</div>`;
   } else {
-    L.innerHTML = `<div><i style="background:#4fd6b8"></i>low aspect (flat)</div>
-                   <div><i style="background:#ff6b6b"></i>high aspect (tall)</div>`;
+    L.innerHTML = `<div>${sw(0x4fd6b8)}low aspect (flat)</div>
+                   <div>${sw(0xff6b6b)}high aspect (tall)</div>`;
   }
 }
 document.querySelectorAll('#f-color button').forEach(b=>b.addEventListener('click',buildLegend));
@@ -546,6 +897,7 @@ function resize(){
 }
 addEventListener('resize',resize);
 
+const SIM_Z = new THREE.Vector3(0,0,1); // holder-local z == world up
 let ct=new THREE.Vector3().copy(camTarget);
 function tick(){
   requestAnimationFrame(tick);
@@ -557,7 +909,9 @@ function tick(){
   );
   camera.lookAt(ct);
   if(state.spin){
-    for(const it of items) if(it.mesh.visible) it.mesh.rotation.y += 0.006;
+    // yaw about the sim z axis so the rest pose is preserved
+    for(const it of items) if(it.holder.visible) it.holder.rotateOnAxis(SIM_Z, 0.006);
+    for(const g of ghosts) g.holder.rotateOnAxis(SIM_Z, 0.006);
   }
   renderer.render(scene,camera);
 }
