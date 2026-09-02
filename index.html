@@ -17,7 +17,7 @@
   #app{display:flex;height:100vh;overflow:hidden}
 
   /* ---- left control rail ---- */
-  #rail{width:300px;flex:0 0 300px;background:var(--panel);border-right:1px solid var(--line);
+  #rail{width:250px;flex:0 0 250px;background:var(--panel);border-right:1px solid var(--line);
     padding:18px 16px;display:flex;flex-direction:column;gap:20px;overflow-y:auto}
   .brand{line-height:1.15}
   .brand b{font-size:15px;letter-spacing:.5px}
@@ -42,7 +42,7 @@
   #cv{display:block;width:100%;height:100%}
   .hint{position:absolute;left:16px;bottom:14px;font-size:11px;color:var(--dim);
     background:rgba(14,18,22,.7);padding:6px 10px;border-radius:6px;border:1px solid var(--line)}
-  #tip{position:absolute;left:16px;top:14px;width:350px;font-size:11px;line-height:1.55;
+  #tip{position:absolute;left:16px;top:14px;width:250px;font-size:11px;line-height:1.55;
     color:var(--ink);background:rgba(14,18,22,.85);padding:9px 12px;border-radius:6px;
     border:1px solid var(--accent);transition:opacity .4s}
   #tip b{color:var(--accent)}
@@ -188,7 +188,9 @@ const PRIM_MANIFEST = './prim/primcontact_v1.json';
 const YCB_MANIFEST  = './ycb/ycb_v1.json';
 
 async function loadManifest(path, dataset){
-  const res = await fetch(path);
+  // cache-bust: manifests are regenerated often and a stale cached copy
+  // silently shows an outdated object set
+  const res = await fetch(path + '?t=' + Date.now());
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const m = await res.json();
   const baseDir = path.slice(0, path.lastIndexOf('/') + 1);
@@ -369,15 +371,20 @@ function buildProxyGeom(o){
 // flatten a loaded obj/gltf scene into one non-indexed geometry (sim frame, meters -> scene units)
 function mergeSceneGeoms(root){
   root.updateMatrixWorld(true);
-  const pos = [];
+  const arrays = [];
   root.traverse(ch => {
     if (!ch.isMesh) return;
     const g = ch.geometry.index ? ch.geometry.toNonIndexed() : ch.geometry.clone();
     g.applyMatrix4(ch.matrixWorld);
-    pos.push(...g.attributes.position.array);
+    arrays.push(g.attributes.position.array);
   });
+  // typed-array concat: spreading 100k+ floats into push() overflows the stack
+  const total = arrays.reduce((n, a) => n + a.length, 0);
+  const pos = new Float32Array(total);
+  let off = 0;
+  for (const a of arrays){ pos.set(a, off); off += a.length; }
   const bg = new THREE.BufferGeometry();
-  bg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  bg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   bg.scale(M, M, M);
   bg.computeVertexNormals();
   return bg;
